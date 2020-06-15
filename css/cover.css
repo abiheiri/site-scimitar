@@ -28,7 +28,7 @@ a:hover {
   width: 100%;
   background-image: url("../images/banner01.jpg");
   background-repeat: no-repeat;
-  height: 405px;
+  height: 200px;
   background-position: center;
   background-size: cover;
 }
