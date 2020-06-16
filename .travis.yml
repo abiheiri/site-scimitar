@@ -1,0 +1,10 @@
+deploy:
+  provider: s3
+  access_key_id: AKIA3RJYYFNXKNOFD65R
+  secret_access_key:
+    secure: vYTy/94guuivE2NbknjLjId1/7eTh9yojdpLFgaMqYByunIz6SfCgtCQjnBw1DBlyVcRZSj4S5S2sTxncWiFaFzoBlsNuS3sc7y2Hpq/wucX2GEAXLjRHVCkjNTaKGe+ip7aMlibLvzQBd8b/A51QBSzWI3wPC6w6uTZaUYMYdQhKBcy2J1HfKXAdkdRQ2qK4tYlHwEcyLoClgTtDZFAhf7won/sZF/RW2uFkqjzJ47edcmlfRxAkVL/sYCZc8Bzhc9AZ5IXmIope8RVzOlch+0FbW4Mxe/OsWgFzxK9wj72Vm4eSLky/OoNk4zXPvW0iZe0d9tSMW49rf7mc1qkByavSYNuP+H+l4kdz4AMGgPXYcQbkkZoZ7vt/K7RMCOvxUXvzQI602RD6EU1BH5jbGxReEq6BIXMWWeujlx5/GD04W6VsVQdAgrJHtVq8ctXkNZIVinnusq0htw9oxQ4LgyEWl1tFCQJ8OWPG3JSZ1kKpWfAJJ7ZlraXDPJEfMgQh5Ta4cpvFfmoHbb4Nv81Kxcs4qQ1hssIEM5AMQ4vViBrDe1zd2Wh9K8zZS5sbu4yxZYQxTWR8ltRXOPBZ5VX+WMyZxh2l+ssfleyOmgHXbfVjBzHk7sTxdJmNIk+NvI7rCw5640b/fVGsKDIBXBDakpqM9r/5pZEhnzn2uQfub8=
+  bucket: www.scimitarguitars.com
+  acl: public_read
+  on:
+    repo: abiheiri/site-scimitar
+  skip_cleanup: true
