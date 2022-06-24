@@ -26,11 +26,12 @@ a:hover {
 
 #bannerimage {
   width: 100%;
-  background-image: url("../images/banner01.jpg");
+  background-image: url("../images/websitelogowhite.png");
   background-repeat: no-repeat;
-  height: 200px;
+  height: 80%;
   background-position: center;
-  background-size: cover;
+  /* background-size: cover; */
+  /* padding: 1%; */
 }
 
 html,
