@@ -20,3 +20,4 @@ jobs:
             --exclude ".git/*" \
             --exclude ".gitignore" \
             --exclude ".circleci/*" \
+            --exclude "workspace/*" \
