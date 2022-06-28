@@ -12,7 +12,7 @@ jobs:
     steps:
       - checkout
       - aws-s3/sync:
-          from: bucket
+          from: .
           to: 's3://your-bucket'
           arguments: |
             --acl public-read \
