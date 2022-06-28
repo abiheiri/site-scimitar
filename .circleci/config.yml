@@ -20,4 +20,3 @@ jobs:
             --exclude ".git/*" \
             --exclude ".gitignore" \
             --exclude ".circleci/*" \
-          overwrite: true
