@@ -1,145 +1,23 @@
 # This code is licensed from CircleCI to the user under the MIT license.
 # See here for details: https://circleci.com/developer/orbs/licensing
 version: 2.1
-description: |
-    Integrate Amazon AWS S3 with your CircleCI CI/CD pipeline easily with the aws-s3 orb.
-display:
-    home_url: https://aws.amazon.com/s3/
-    source_url: https://github.com/CircleCI-Public/aws-s3-orb
 orbs:
-    aws-cli: circleci/aws-cli@2.0
-commands:
-    copy:
-        description: |
-            Copies a local file or S3 object to another location locally or in S3. https://docs.aws.amazon.com/cli/latest/reference/s3/cp.html
-        parameters:
-            arguments:
-                default: ""
-                description: If you wish to pass any additional arguments to the aws copy command (i.e. -sse)
-                type: string
-            aws-access-key-id:
-                default: AWS_ACCESS_KEY_ID
-                description: aws access key id override
-                type: env_var_name
-            aws-region:
-                default: AWS_REGION
-                description: aws region override
-                type: env_var_name
-            aws-secret-access-key:
-                default: AWS_SECRET_ACCESS_KEY
-                description: aws secret access key override
-                type: env_var_name
-            from:
-                description: A local file or source s3 object
-                type: string
-            to:
-                description: A local target or s3 destination
-                type: string
-        steps:
-            - aws-cli/setup:
-                aws-access-key-id: << parameters.aws-access-key-id >>
-                aws-region: << parameters.aws-region >>
-                aws-secret-access-key: << parameters.aws-secret-access-key >>
-            - run:
-                command: aws s3 cp << parameters.from >> << parameters.to >><<# parameters.arguments >> << parameters.arguments >><</ parameters.arguments >>
-                name: S3 Copy << parameters.from >> -> << parameters.to >>
-    sync:
-        description: |
-            Syncs directories and S3 prefixes. https://docs.aws.amazon.com/cli/latest/reference/s3/sync.html
-        parameters:
-            arguments:
-                default: ""
-                description: |
-                    Optional additional arguments to pass to the `aws sync` command (e.g., `--acl public-read`). Note: if passing a multi-line value to this parameter, include `\` characters after each line, so the Bash shell can correctly interpret the entire command.
-                type: string
-            aws-access-key-id:
-                default: AWS_ACCESS_KEY_ID
-                description: aws access key id override
-                type: env_var_name
-            aws-region:
-                default: AWS_REGION
-                description: aws region override
-                type: env_var_name
-            aws-secret-access-key:
-                default: AWS_SECRET_ACCESS_KEY
-                description: aws secret access key override
-                type: env_var_name
-            from:
-                description: A local *directory* path to sync with S3
-                type: string
-            to:
-                description: A URI to an S3 bucket, i.e. 's3://the-name-my-bucket'
-                type: string
-        steps:
-            - aws-cli/setup:
-                aws-access-key-id: << parameters.aws-access-key-id >>
-                aws-region: << parameters.aws-region >>
-                aws-secret-access-key: << parameters.aws-secret-access-key >>
-            - deploy:
-                command: |
-                    aws s3 sync \
-                      <<parameters.from>> <<parameters.to>> <<#parameters.arguments>> \
-                      <<parameters.arguments>><</parameters.arguments>>
-                name: S3 Sync
-examples:
-    override_credentials:
-        description: |
-            How to use the S3 orb with alternate credentials.
-        usage:
-            version: "2.1"
-            orbs:
-                aws-s3: circleci/aws-s3@3.0
-            jobs:
-                build:
-                    docker:
-                        - image: cimg/python:3.6
-                    steps:
-                        - checkout
-                        - run: mkdir bucket && echo "lorem ipsum" > bucket/build_asset.txt
-                        - aws-s3/sync:
-                            arguments: |
-                                --acl public-read \
-                                --cache-control "max-age=86400"
-                            aws-access-key-id: AWS_ACCESS_KEY_ID_BLUE
-                            aws-region: AWS_REGION_BLUE
-                            aws-secret-access-key: AWS_SECRET_ACCESS_KEY_BLUE
-                            from: bucket
-                            to: s3://my-s3-bucket-name/prefix
-                        - aws-s3/copy:
-                            arguments: --dryrun
-                            from: bucket/build_asset.txt
-                            to: s3://my-s3-bucket-name
-            workflows:
-                s3-example:
-                    jobs:
-                        - build
-    sync_and_copy:
-        description: |
-            The S3 orb allows you to "sync" directories or "copy" files to an S3 bucket. The example below shows a typical CircleCI job where a file "bucket/build_asset.txt" is created, followed by how we can both sync, and/or copy the file.
-        usage:
-            version: "2.1"
-            orbs:
-                aws-s3: circleci/aws-s3@3.0
-            jobs:
-                build:
-                    docker:
-                        - image: cimg/python:3.6
-                    steps:
-                        - checkout
-                        - run: mkdir bucket && echo "lorem ipsum" > bucket/build_asset.txt
-                        - aws-s3/sync:
-                            arguments: |
-                                --acl public-read \
-                                --cache-control "max-age=86400"
-                            from: bucket
-                            to: s3://my-s3-bucket-name/prefix
-                        - aws-s3/copy:
-                            arguments: --dryrun
-                            from: bucket/build_asset.txt
-                            to: s3://my-s3-bucket-name
-            workflows:
-                s3-example:
-                    jobs:
-                        - build
+  aws-s3: circleci/aws-s3@1.0.6
 
+jobs:
+  build:
+    docker:
+      - image: 'circleci/python:latest'
 
+    steps:
+      - checkout
+      - aws-s3/sync:
+          from: .
+          to: 's3://www.scimitarguitars.com'
+          arguments: |
+            --acl public-read \
+            --cache-control "max-age=86400" \
+            --exclude ".git/*" \
+            --exclude ".gitignore" \
+            --exclude ".circleci/*" \
+          overwrite: true
