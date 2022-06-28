@@ -1,23 +1,23 @@
 # This code is licensed from CircleCI to the user under the MIT license.
 # See here for details: https://circleci.com/developer/orbs/licensing
 version: 2.1
-  orbs:
+orbs:
     aws-s3: circleci/aws-s3@3.0
-    
-  jobs:
-    build:
-      docker:
-        - image: cimg/python:3.6
 
-      steps:
-        - checkout
-        - aws-s3/sync:
-            from: bucket
-            to: 's3://www.scimitarguitars.com'
-            arguments: |
-                --acl public-read \
-                --cache-control "max-age=86400" \
-                --exclude ".git/*" \
-                --exclude ".gitignore" \
-                --exclude ".circleci/*" \
-            overwrite: true
+jobs:
+  build:
+    docker:
+      - image: 'circleci/python:latest'
+
+    steps:
+      - checkout
+      - aws-s3/sync:
+          from: bucket
+          to: 's3://your-bucket'
+          arguments: |
+            --acl public-read \
+            --cache-control "max-age=86400" \
+            --exclude ".git/*" \
+            --exclude ".gitignore" \
+            --exclude ".circleci/*" \
+          overwrite: true
