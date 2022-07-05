@@ -21,7 +21,7 @@ body {
  .navbar{
   height: auto;
   width: 100%;
-  padding-top: 3rem;
+  padding-top: 2rem;
   display: block;
 }
 
@@ -50,7 +50,12 @@ body {
     padding: 2rem;
   }
 
-  div#about   {order: 2;}
-  div#contact  {order: 3;}
+  .navbtn{
+    padding-top: 3rem;
+  }
+
+  div#about {order: 2;}
+  div#contact {order: 3;}
   div#logo {order: 1;}
 }
+
