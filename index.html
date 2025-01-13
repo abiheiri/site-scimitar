@@ -1,5 +1,4 @@
 <!DOCTYPE HTML>
-
 <html lang="en">
   <head>
       <meta charset="utf-8">
@@ -8,9 +7,11 @@
       <meta name="keywords" content="Scimitar, Guitar, Biheiri, abiheiri" />
 
       <link rel="preload" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" as="style">
-      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+      <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
+            integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
       <link rel="stylesheet" href="css/cover.css" />
       <link href='https://fonts.googleapis.com/css?family=Itim' rel='stylesheet' type='text/css'>
+
       <style>
         #logo img {
           max-width: 100%;
@@ -30,19 +31,57 @@
       </nav>
     </header>
     
+    <!-- Gallery Section -->
     <section class="text-center feed">
-      <!-- LightWidget WIDGET --><script src="https://cdn.lightwidget.com/widgets/lightwidget.js" defer></script>
-      <iframe src="//lightwidget.com/widgets/cb87027c2e265e69b310909830f13da4.html" scrolling="no" allowtransparency="true" class="lightwidget-widget" style="width:100%;border:0;overflow:hidden;" loading="lazy"></iframe>
-      <div class="feedlink">
-        <a href="https://www.instagram.com/scimitar_guitars/" aria-label="Instagram Profile">
-          <img src="images/icon_ig.png" height="64" alt="Instagram icon" loading="lazy"> Check out my photos on Instagram
-        </a>
+      <div id="gallery" class="gallery">
+        <!-- Imgur images will be injected here -->
       </div>
     </section>
-          
-    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" crossorigin="anonymous" defer></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" crossorigin="anonymous" defer></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" crossorigin="anonymous" defer></script>
+    
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" 
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n" 
+            crossorigin="anonymous" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js" 
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo" 
+            crossorigin="anonymous" defer></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js" 
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" 
+            crossorigin="anonymous" defer></script>
+    
+    <!-- Imgur API Fetch -->
+    <script>
+      const clientId = 'b6a7daf71cc05c7';
+    
+      fetch('https://api.imgur.com/3/album/vsBwzmR/images', {
+        headers: {
+          'Authorization': `Client-ID ${clientId}`
+        }
+      })
+        .then(response => response.json())
+        .then(json => {
+          const gallery = document.getElementById('gallery');
+          if (json.data && Array.isArray(json.data)) {
+            json.data.forEach(image => {
+              // Create a link pointing to the Imgur page for this image:
+              const linkEl = document.createElement('a');
+              linkEl.href = `https://imgur.com/${image.id}`;
+              linkEl.target = '_blank'; // opens link in a new tab
+    
+              // Create the image element:
+              const imgEl = document.createElement('img');
+              imgEl.src = image.link;
+              imgEl.alt = image.title || 'Scimitar Guitars Image';
+    
+              // Put the <img> inside the <a>, then add it to the gallery
+              linkEl.appendChild(imgEl);
+              gallery.appendChild(linkEl);
+            });
+          }
+        })
+        .catch(err => console.error(err));
+    </script>
+    
     
   </body>
 </html>
