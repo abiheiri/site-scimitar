@@ -17,6 +17,11 @@
           max-width: 100%;
           height: auto;
         }
+        .construction-message {
+          font-size: 1.2rem;
+          color: #ccc;
+          margin-bottom: 2rem;
+        }
       </style>
   </head>
 
@@ -33,6 +38,11 @@
     
     <!-- Gallery Section -->
     <section class="text-center feed">
+      <!-- Work in progress message -->
+      <p class="construction-message">
+        This website is still under construction. Please check back soon for updates!
+      </p>
+
       <div id="gallery" class="gallery">
         <!-- Imgur images will be injected here -->
       </div>
@@ -52,7 +62,7 @@
     <!-- Imgur API Fetch -->
     <script>
       const clientId = 'b6a7daf71cc05c7';
-    
+
       fetch('https://api.imgur.com/3/album/vsBwzmR/images', {
         headers: {
           'Authorization': `Client-ID ${clientId}`
@@ -63,17 +73,14 @@
           const gallery = document.getElementById('gallery');
           if (json.data && Array.isArray(json.data)) {
             json.data.forEach(image => {
-              // Create a link pointing to the Imgur page for this image:
               const linkEl = document.createElement('a');
               linkEl.href = `https://imgur.com/${image.id}`;
-              linkEl.target = '_blank'; // opens link in a new tab
-    
-              // Create the image element:
+              linkEl.target = '_blank';
+
               const imgEl = document.createElement('img');
               imgEl.src = image.link;
               imgEl.alt = image.title || 'Scimitar Guitars Image';
-    
-              // Put the <img> inside the <a>, then add it to the gallery
+
               linkEl.appendChild(imgEl);
               gallery.appendChild(linkEl);
             });
@@ -81,7 +88,5 @@
         })
         .catch(err => console.error(err));
     </script>
-    
-    
   </body>
 </html>
