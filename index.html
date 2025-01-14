@@ -39,9 +39,9 @@
 
       <!-- Pagination Controls -->
       <div class="pagination-controls">
-        <button type="button" onclick="prevPage()">Previous</button>
-        <button type="button" onclick="nextPage()">Next</button>
-      </div>
+        <button id="prevBtn" type="button" onclick="prevPage()">Previous</button>
+        <button id="nextBtn" type="button" onclick="nextPage()">Next</button>
+      </div>      
     </section>
     
     <!-- Scripts -->
@@ -57,15 +57,13 @@
     
     <!-- Imgur API Fetch with Pagination -->
     <script>
-      // Use your actual Client ID and album hash
-      const clientId = 'b6a7daf71cc05c7';
+      const clientId = 'b6a7daf71cc05c7';  // Keep your actual values
       const albumHash = 'vsBwzmR';
     
       let allImages = [];
       let currentPage = 1;
       const imagesPerPage = 4;
     
-      // Fetch images once from Imgur
       fetch(`https://api.imgur.com/3/album/${albumHash}/images`, {
         headers: {
           Authorization: `Client-ID ${clientId}`
@@ -75,10 +73,9 @@
         .then(json => {
           allImages = json.data || [];
     
-          // Randomize the order
-          allImages.sort(() => Math.random() - 0.5);
+          // Optional: shuffle the array:
+          // allImages.sort(() => Math.random() - 0.5);
     
-          // Display the images in shuffled order
           displayImages(currentPage);
         })
         .catch(err => console.error(err));
@@ -103,6 +100,16 @@
           linkEl.appendChild(imgEl);
           gallery.appendChild(linkEl);
         });
+    
+        // Update button states
+        const totalPages = Math.ceil(allImages.length / imagesPerPage);
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+    
+        // Disable Prev if we're on the first page
+        prevBtn.disabled = (currentPage <= 1);
+        // Disable Next if we're on the last page
+        nextBtn.disabled = (currentPage >= totalPages);
       }
     
       function nextPage() {
@@ -119,7 +126,6 @@
           displayImages(currentPage);
         }
       }
-    </script>
-    
+    </script>    
   </body>
 </html>
