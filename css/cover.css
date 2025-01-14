@@ -142,3 +142,30 @@
    border: 2px solid #fff; /* Optional; remove if undesired */
  }
  
+/*
+ * Pagination Controls
+ */
+ .pagination-controls {
+  text-align: center;
+  margin-top: 1rem;
+  margin-bottom: 2rem;
+}
+
+.pagination-controls button {
+  cursor: pointer;
+  background-color: #ccc;
+  border: none;
+  padding: 0.5rem 1.5rem;
+  margin: 0 1rem;
+  color: #111;
+  transition: background-color 300ms;
+  border-radius: 20px; /* Rounded corners */
+  width: 120px;        /* Fixed width for both buttons */
+  text-align: center;
+}
+
+.pagination-controls button:hover {
+  background-color: #eee;
+}
+
+ 

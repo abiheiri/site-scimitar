@@ -4,7 +4,7 @@
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
       <meta name="description" content="Scimitar Guitars" />
-      <meta name="keywords" content="Scimitar, Guitar" />
+      <meta name="keywords" content="Scimitar, Guitar, Biheiri, abiheiri" />
 
       <link rel="preload" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" as="style">
       <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" 
@@ -16,11 +16,6 @@
         #logo img {
           max-width: 100%;
           height: auto;
-        }
-        .construction-message {
-          font-size: 1.2rem;
-          color: #ccc;
-          margin-bottom: 2rem;
         }
       </style>
   </head>
@@ -38,13 +33,14 @@
     
     <!-- Gallery Section -->
     <section class="text-center feed">
-      <!-- Work in progress message -->
-      <p class="construction-message">
-        This website is still under construction. Please check back soon for updates!
-      </p>
-
       <div id="gallery" class="gallery">
         <!-- Imgur images will be injected here -->
+      </div>
+
+      <!-- Pagination Controls -->
+      <div class="pagination-controls">
+        <button type="button" onclick="prevPage()">Previous</button>
+        <button type="button" onclick="nextPage()">Next</button>
       </div>
     </section>
     
@@ -59,34 +55,71 @@
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6" 
             crossorigin="anonymous" defer></script>
     
-    <!-- Imgur API Fetch -->
+    <!-- Imgur API Fetch with Pagination -->
     <script>
+      // Use your actual Client ID and album hash
       const clientId = 'b6a7daf71cc05c7';
-
-      fetch('https://api.imgur.com/3/album/vsBwzmR/images', {
+      const albumHash = 'vsBwzmR';
+    
+      let allImages = [];
+      let currentPage = 1;
+      const imagesPerPage = 4;
+    
+      // Fetch images once from Imgur
+      fetch(`https://api.imgur.com/3/album/${albumHash}/images`, {
         headers: {
-          'Authorization': `Client-ID ${clientId}`
+          Authorization: `Client-ID ${clientId}`
         }
       })
         .then(response => response.json())
         .then(json => {
-          const gallery = document.getElementById('gallery');
-          if (json.data && Array.isArray(json.data)) {
-            json.data.forEach(image => {
-              const linkEl = document.createElement('a');
-              linkEl.href = `https://imgur.com/${image.id}`;
-              linkEl.target = '_blank';
-
-              const imgEl = document.createElement('img');
-              imgEl.src = image.link;
-              imgEl.alt = image.title || 'Scimitar Guitars Image';
-
-              linkEl.appendChild(imgEl);
-              gallery.appendChild(linkEl);
-            });
-          }
+          allImages = json.data || [];
+    
+          // Randomize the order
+          allImages.sort(() => Math.random() - 0.5);
+    
+          // Display the images in shuffled order
+          displayImages(currentPage);
         })
         .catch(err => console.error(err));
+    
+      function displayImages(page) {
+        const gallery = document.getElementById('gallery');
+        gallery.innerHTML = '';
+    
+        const startIndex = (page - 1) * imagesPerPage;
+        const endIndex = startIndex + imagesPerPage;
+    
+        const imagesToShow = allImages.slice(startIndex, endIndex);
+        imagesToShow.forEach(img => {
+          const linkEl = document.createElement('a');
+          linkEl.href = `https://imgur.com/${img.id}`;
+          linkEl.target = '_blank';
+    
+          const imgEl = document.createElement('img');
+          imgEl.src = img.link;
+          imgEl.alt = img.title || 'Scimitar Guitars Image';
+    
+          linkEl.appendChild(imgEl);
+          gallery.appendChild(linkEl);
+        });
+      }
+    
+      function nextPage() {
+        const totalPages = Math.ceil(allImages.length / imagesPerPage);
+        if (currentPage < totalPages) {
+          currentPage++;
+          displayImages(currentPage);
+        }
+      }
+    
+      function prevPage() {
+        if (currentPage > 1) {
+          currentPage--;
+          displayImages(currentPage);
+        }
+      }
     </script>
+    
   </body>
 </html>
