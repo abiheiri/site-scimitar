@@ -73,8 +73,8 @@
         .then(json => {
           allImages = json.data || [];
     
-          // Optional: shuffle the array:
-          // allImages.sort(() => Math.random() - 0.5);
+          // shuffle the array:
+          allImages.sort(() => Math.random() - 0.5);
     
           displayImages(currentPage);
         })
