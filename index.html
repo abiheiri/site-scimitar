@@ -15,17 +15,32 @@
   </head>
 
   <body>
-    <header>
-      <div style="display: flex; align-items: center; justify-content: space-between;">
-        <img src="images/logoWhite.svg" alt="Scimitar Guitars" style="flex-shrink: 0;">
-        <h1 style="flex-grow: 1; text-align: center; font-family: 'Playfair Display', serif; font-weight: 700; margin: 0; color: white; font-size: 1.8rem;">Scimitar Guitars</h1>
+    <header class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="#">
+          <img src="images/logoWhite.svg" alt="Scimitar Guitars" style="height: 40px;">
+          <span style="font-family: 'Playfair Display', serif; font-weight: 700; margin-left: 10px;">Scimitar Guitars</span>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav ms-auto">
+            <li class="nav-item">
+              <a class="nav-link" href="#gallery" onclick="showGallery()">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#gallery" onclick="showGallery()">Gallery</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#about" onclick="showAbout()">About</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="#contact" onclick="showContact()">Contact</a>
+            </li>
+          </ul>
+        </div>
       </div>
-      <nav>
-        <a href="#gallery" onclick="showGallery()">Home</a>
-        <a href="#gallery" onclick="showGallery()">Gallery</a>
-        <a href="#about" onclick="showAbout()">About</a>
-        <a href="#contact" onclick="showContact()">Contact</a>
-      </nav>
     </header>
 
     <!-- Hero Section -->
@@ -138,7 +153,6 @@
         if (currentPage < totalPages) {
           currentPage++;
           displayImages(currentPage);
-          // window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
 
@@ -146,7 +160,6 @@
         if (currentPage > 1) {
           currentPage--;
           displayImages(currentPage);
-          // window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
 
