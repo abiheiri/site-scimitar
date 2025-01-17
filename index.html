@@ -10,30 +10,49 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
         crossorigin="anonymous">
 
-      <link rel="stylesheet" href="css/cover.css" />
-      <link href='https://fonts.googleapis.com/css?family=Itim' rel='stylesheet' type='text/css'>
-
-      <style>
-        #logo img {
-          max-width: 100%;
-          height: auto;
-        }
-      </style>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="main.css">
   </head>
 
   <body>
     <header>
-      <nav class="navbar">
-        <div class="container flex-sm-nowrap justify-content-center">
-          <div id="logo" class="mx-auto">
-            <img src="images/logoWhite.svg" alt="Scimitar Guitars" loading="lazy">
-          </div>
-        </div>
+      <div style="display: flex; align-items: center; justify-content: space-between;">
+        <img src="images/logoWhite.svg" alt="Scimitar Guitars" style="flex-shrink: 0;">
+        <h1 style="flex-grow: 1; text-align: center; font-family: 'Playfair Display', serif; font-weight: 700; margin: 0; color: white; font-size: 1.8rem;">Scimitar Guitars</h1>
+      </div>
+      <nav>
+        <a href="#gallery" onclick="showGallery()">Home</a>
+        <a href="#gallery" onclick="showGallery()">Gallery</a>
+        <a href="#about" onclick="showAbout()">About</a>
+        <a href="#contact" onclick="showContact()">Contact</a>
       </nav>
     </header>
-    
+
+    <!-- Hero Section -->
+    <section id="hero">
+      <h1>The Art of Tone, Mastered by Hand</h1>
+      <p>Instruments that inspire, crafted for musicians.</p>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+      <h2>About Me</h2>
+      <p>
+        My inspiration comes from the iconic superstrats of the 1980s. Over the years, I’ve tried numerous brands and styles, but each left me wanting something more. This desire to perfect the guitar experience led me to craft instruments with the features I always wished existed.
+      </p>
+      <p>
+        I use only the highest quality components, such as German-made Floyd Rose tremolos, and explore unique woods like solid purpleheart or wenge necks, including the fretboard. My designs feature fretboards without front-facing dots, prioritizing sleek aesthetics and deep neck access. I contour my guitars heavily and incorporate ferrules instead of metal plates for reduced resistance when reaching the lower registers.
+      </p>
+      <p>
+        One of my favorite design elements is maintaining a natural, smooth finish on the guitar neck. While heavy lacquer is often used in mass-market guitars for cost-effectiveness, it can create an unpleasant plastic-like feel and cause friction during playing. My necks are carefully finished to retain an organic feel while being sealed to protect against moisture and warping. This strikes a balance between playability and durability, ensuring a superior experience.
+      </p>
+      <p>
+        I’m passionate about tonal versatility, equipping my guitars with push-pull knobs for coil-splitting and phase-splitting options. Stainless steel frets ensure longevity, and I’ve experimented with glow-in-the-dark inlays and other unique enhancements. Every detail is a labor of love, designed to provide a superior playing experience.
+      </p>
+    </section>
+
     <!-- Gallery Section -->
-    <section class="text-center feed">
+    <section id="gallery-section" class="text-center feed">
       <div id="gallery" class="gallery">
         <!-- Imgur images will be injected here -->
       </div>
@@ -44,13 +63,28 @@
         <button id="nextBtn" type="button" onclick="nextPage()">Next</button>
       </div>      
     </section>
-    
+
+    <!-- Contact Section -->
+    <section id="contact" class="about-section" style="display: none;">
+      <h2>Contact</h2>
+      <p>
+        Thank you for your interest in reaching out! At this time, I am not taking orders as I have a full-time job that remains my priority. Unfortunately, I cannot fulfill the volume of requests I receive. I truly appreciate your understanding and support.
+      </p>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+      <p>&copy; 2025 Scimitar Guitars. All rights reserved.</p>
+      <p>
+        <a href="#hero">Home</a> | <a href="#gallery" onclick="showGallery()">Gallery</a> | <a href="#about" onclick="showAbout()">About</a> | <a href="#contact" onclick="showContact()">Contact</a>
+      </p>
+    </footer>
+
     <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" 
       integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" 
       crossorigin="anonymous"></script>
     
-    <!-- Imgur API Fetch with Pagination -->
     <script>
       const clientId = 'b6a7daf71cc05c7'; 
       const albumHash = 'vsBwzmR';
@@ -58,7 +92,8 @@
       let allImages = [];
       let currentPage = 1;
       const imagesPerPage = 4;
-    
+
+      // Fetch gallery images
       fetch(`https://api.imgur.com/3/album/${albumHash}/images`, {
         headers: {
           Authorization: `Client-ID ${clientId}`
@@ -67,66 +102,81 @@
         .then(response => response.json())
         .then(json => {
           allImages = json.data || [];
-    
-          // shuffle the array:
           allImages.sort(() => Math.random() - 0.5);
-    
           displayImages(currentPage);
         })
         .catch(err => console.error(err));
-    
+
       function displayImages(page) {
         const gallery = document.getElementById('gallery');
         gallery.innerHTML = '';
-    
+
         const startIndex = (page - 1) * imagesPerPage;
         const endIndex = startIndex + imagesPerPage;
-    
+
         const imagesToShow = allImages.slice(startIndex, endIndex);
         imagesToShow.forEach(img => {
           const linkEl = document.createElement('a');
           linkEl.href = `https://imgur.com/${img.id}`;
           linkEl.target = '_blank';
-    
+
           const imgEl = document.createElement('img');
           imgEl.src = img.link;
           imgEl.alt = img.title || 'Scimitar Guitars Image';
-    
+
           linkEl.appendChild(imgEl);
           gallery.appendChild(linkEl);
         });
-    
-        // Update button states
+
         const totalPages = Math.ceil(allImages.length / imagesPerPage);
-        const prevBtn = document.getElementById('prevBtn');
-        const nextBtn = document.getElementById('nextBtn');
-    
-        // Disable Prev if we're on the first page
-        prevBtn.disabled = (currentPage <= 1);
-        // Disable Next if we're on the last page
-        nextBtn.disabled = (currentPage >= totalPages);
+        document.getElementById('prevBtn').disabled = (currentPage <= 1);
+        document.getElementById('nextBtn').disabled = (currentPage >= totalPages);
       }
-    
+
       function nextPage() {
         const totalPages = Math.ceil(allImages.length / imagesPerPage);
         if (currentPage < totalPages) {
           currentPage++;
           displayImages(currentPage);
-
-          // Scroll to the top
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
-    
+
       function prevPage() {
         if (currentPage > 1) {
           currentPage--;
           displayImages(currentPage);
-
-          // Scroll to the top
-          window.scrollTo({ top: 0, behavior: 'smooth' });
+          // window.scrollTo({ top: 0, behavior: 'smooth' });
         }
       }
+
+      // Show gallery and hide about and contact
+      function showGallery() {
+        document.getElementById('gallery-section').style.display = 'block';
+        document.getElementById('about').style.display = 'none';
+        document.getElementById('contact').style.display = 'none';
+        document.querySelector('#hero h1').innerText = 'The Art of Tone, Mastered by Hand';
+        document.querySelector('#hero p').innerText = 'Instruments that inspire, crafted for musicians.';
+      }
+
+      // Show about and hide gallery and contact
+      function showAbout() {
+        document.getElementById('gallery-section').style.display = 'none';
+        document.getElementById('about').style.display = 'block';
+        document.getElementById('contact').style.display = 'none';
+        document.querySelector('#hero h1').innerText = 'About Scimitar Guitars';
+        document.querySelector('#hero p').innerText = 'The Art of Tone, Mastered by Hand';
+      }
+
+      // Show contact and hide other sections
+      function showContact() {
+        document.getElementById('gallery-section').style.display = 'none';
+        document.getElementById('about').style.display = 'none';
+        document.getElementById('contact').style.display = 'block';
+        document.querySelector('#hero h1').innerText = 'Contact Scimitar Guitars';
+        document.querySelector('#hero p').innerText = 'Thank you for your interest in reaching out!';
+      }
+
     </script>    
   </body>
 </html>
