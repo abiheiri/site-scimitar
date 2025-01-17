@@ -16,54 +16,53 @@
  }
  
  /*
-  * Navbar
+  * Header
   */
- .navbar {
-   background-color: #1c1c1c;
-   padding: 0.5rem 1rem;
+ header {
+   background-color: #1c1c1c; /* Slightly darker for distinction */
+   color: white;
+   padding: 20px 40px;
+   display: flex;
+   align-items: center;
+   justify-content: space-between;
  }
-
- .navbar-brand img {
-   height: 40px;
+ 
+ header img {
+   height: 60px;
    width: auto;
  }
-
- .navbar-toggler {
-   border-color: rgba(255, 255, 255, 0.1);
+ 
+ .navbar-brand span {
+  font-family: 'Playfair Display', serif;
+  font-weight: 700;
+  margin-left: 10px;
+  color: white;
+  font-size: 1.2rem; /* Adjusted for better visibility on mobile */
+  display: inline !important; /* Force it to show on all devices */
+}
+ 
+@media (min-width: 992px) {
+  .navbar-brand span {
+    font-size: 1.8rem; /* Larger size for desktop */
+  }
  }
-
- .navbar-toggler-icon {
-   background-color: rgba(255, 255, 255, 0.8);
-   border-radius: 2px;
+ 
+ nav {
+   display: flex;
+   gap: 30px;
  }
-
- .navbar-collapse {
-   justify-content: flex-end;
- }
-
- .nav-link {
+ 
+ nav a {
    color: white;
-   margin-left: 1rem;
-   transition: color 0.3s ease;
+   text-decoration: none;
+   font-weight: 500;
+   font-size: 1.1rem;
+   transition: color 0.3s, transform 0.2s;
  }
-
- .nav-link:hover {
+ 
+ nav a:hover {
    color: #ddd;
- }
-
- @media (max-width: 992px) {
-   .navbar-nav {
-     text-align: center;
-   }
-
-   .nav-link {
-     margin-left: 0;
-     margin-bottom: 0.5rem;
-   }
-
-   .navbar-brand span {
-     display: none; /* Hide text for mobile users */
-   }
+   transform: translateY(-2px);
  }
  
  /*
@@ -71,23 +70,21 @@
   */
  #hero {
    position: relative;
-   /* background: url('images/hero-guitar.jpg') no-repeat center center/cover; */
    color: white;
    text-align: center;
    padding: 150px 20px 120px;
    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
  }
  
-#hero h1 {
-  font-family: 'Montserrat', sans-serif;
-  font-size: 3.5rem;
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  margin-bottom: 20px;
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-}
-
+ #hero h1 {
+   font-family: 'Montserrat', sans-serif;
+   font-size: 3.5rem;
+   font-weight: 700;
+   letter-spacing: 0.05em;
+   margin-bottom: 20px;
+   color: #fff;
+   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+ }
  
  #hero p {
    font-size: 1.5rem;
@@ -178,3 +175,4 @@
  footer a:hover {
    color: white;
  }
+ 
