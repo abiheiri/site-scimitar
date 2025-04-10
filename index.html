@@ -10,8 +10,9 @@
         integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" 
         crossorigin="anonymous">
 
-      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
       <link rel="stylesheet" href="main.css">
+
+      <link href="https://fonts.googleapis.com/css2?family=Comic+Neue:wght@400;700&display=swap" rel="stylesheet">
   </head>
 
   <body>
@@ -45,7 +46,6 @@
 
     <!-- About Section -->
     <section id="about" class="about-section">
-      <h2>About Me</h2>
       <p>
         My inspiration comes from the iconic superstrats of the 1980s. Over the years, I’ve tried numerous brands and styles, but each left me wanting something more. This desire to perfect the guitar experience led me to craft instruments with the features I always wished existed.
       </p>
@@ -162,8 +162,6 @@
         document.getElementById('gallery-section').style.display = 'block';
         document.getElementById('about').style.display = 'none';
         document.getElementById('contact').style.display = 'none';
-        document.querySelector('#hero h1').innerText = 'The Art of Tone, Mastered by Hand';
-        document.querySelector('#hero p').innerText = 'Instruments that inspire, crafted for musicians.';
       }
 
       // Show about and hide gallery and contact
@@ -171,8 +169,6 @@
         document.getElementById('gallery-section').style.display = 'none';
         document.getElementById('about').style.display = 'block';
         document.getElementById('contact').style.display = 'none';
-        document.querySelector('#hero h1').innerText = 'About Scimitar Guitars';
-        document.querySelector('#hero p').innerText = 'The Art of Tone, Mastered by Hand';
       }
 
       // Show contact and hide other sections
@@ -180,8 +176,6 @@
         document.getElementById('gallery-section').style.display = 'none';
         document.getElementById('about').style.display = 'none';
         document.getElementById('contact').style.display = 'block';
-        document.querySelector('#hero h1').innerText = 'Contact Scimitar Guitars';
-        document.querySelector('#hero p').innerText = 'Thank you for your interest in reaching out!';
       }
 
     </script>    
