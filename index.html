@@ -36,9 +36,6 @@
             <li class="nav-item">
               <a class="nav-link" href="#about" onclick="showAbout()">About</a>
             </li>
-            <li class="nav-item">
-              <a class="nav-link" href="#contact" onclick="showContact()">Contact</a>
-            </li>
           </ul>
         </div>
       </div>
@@ -47,16 +44,19 @@
     <!-- About Section -->
     <section id="about" class="about-section">
       <p>
-      I started with the superstrats but couldn't find guitars that met my standards. This led me to build my own.
+      I started with the superstrats but couldn't find guitars that met my standards so I decided to build my own.
      </p>
      <p>
-      I use quality Floyd Rose tremolos and woods like purpleheart and wenge. My designs have no front dots, feature deep contours, and use string ferrules instead of plates for better upper fret access.
+      I select premium hardware and woods such as purpleheart and wenge. My builds feature deep contours, no front fret markers, and utilize string ferrules instead of plates to enhance upper fret access.
      </p>
      <p>
-      I avoid the heavy lacquer found on mass-produced guitars. My neck finishing preserves the natural wood feel while providing just enough protection against moisture and wear.
+      I avoid the heavy lacquer found on mass-produced guitars so the neck finishing preserves the natural wood feel while providing just enough protection against moisture.
      </p>
      <p>
-      I add push-pull knobs for coil-splitting and phase options. Stainless steel frets last longer, and sometimes I incorporate special features like glow inlays for unique visual elements.
+      I use push-pull knobs for coil-splitting and phase switching, giving players a wide range of tonal options—for those who want versatility beyond just heavy metal sounds.
+     </p>
+     <p>
+      I use stainless steel frets for enhanced durability, and occasionally add unique touches such as glow inlays for distinctive visual appeal.
      </p>
      </section>
 
@@ -73,19 +73,11 @@
       </div>      
     </section>
 
-    <!-- Contact Section -->
-    <section id="contact" class="about-section" style="display: none;">
-      <h2>Contact</h2>
-      <p>
-        
-      </p>
-    </section>
-
     <!-- Footer -->
     <footer>
       <p>&copy; 2025 Scimitar Guitars. All rights reserved.</p>
       <p>
-        <a href="#hero">Home</a> | <a href="#gallery" onclick="showGallery()">Gallery</a> | <a href="#about" onclick="showAbout()">About</a> | <a href="#contact" onclick="showContact()">Contact</a>
+        <a href="#hero">Home</a> | <a href="#gallery" onclick="showGallery()">Gallery</a> | <a href="#about" onclick="showAbout()">About</a>
       </p>
     </footer>
 
@@ -157,25 +149,16 @@
         }
       }
 
-      // Show gallery and hide about and contact
+      // Show gallery and hide about
       function showGallery() {
         document.getElementById('gallery-section').style.display = 'block';
         document.getElementById('about').style.display = 'none';
-        document.getElementById('contact').style.display = 'none';
       }
 
-      // Show about and hide gallery and contact
+      // Show about and hide gallery
       function showAbout() {
         document.getElementById('gallery-section').style.display = 'none';
         document.getElementById('about').style.display = 'block';
-        document.getElementById('contact').style.display = 'none';
-      }
-
-      // Show contact and hide other sections
-      function showContact() {
-        document.getElementById('gallery-section').style.display = 'none';
-        document.getElementById('about').style.display = 'none';
-        document.getElementById('contact').style.display = 'block';
       }
 
     </script>    
