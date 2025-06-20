@@ -43,6 +43,11 @@ function loadNextBatch() {
       source.src = src;
       source.type = 'video/mp4';
       video.appendChild(source);
+      // Overlay click for video
+      video.addEventListener('click', function(e) {
+        e.preventDefault();
+        showOverlay('video', src);
+      });
       gallery.appendChild(video);
     } else {
       const img = document.createElement('img');
@@ -51,11 +56,51 @@ function loadNextBatch() {
       img.style.width = width + 'px';
       img.loading = 'lazy';
       img.alt = 'Scimitar Guitar';
+      // Overlay click for image
+      img.addEventListener('click', function(e) {
+        e.preventDefault();
+        showOverlay('img', src);
+      });
       gallery.appendChild(img);
     }
   });
   loadedCount += toLoad.length;
 }
+
+// Overlay logic
+let lastScrollY = 0;
+function showOverlay(type, src) {
+  lastScrollY = window.scrollY;
+  const overlay = document.getElementById('imageOverlay');
+  const overlayImg = document.getElementById('overlayImg');
+  const overlayVideo = document.getElementById('overlayVideo');
+  if (type === 'img') {
+    overlayImg.src = src;
+    overlayImg.style.display = 'block';
+    overlayVideo.style.display = 'none';
+  } else {
+    overlayVideo.src = src;
+    overlayVideo.style.display = 'block';
+    overlayImg.style.display = 'none';
+  }
+  overlay.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+}
+document.addEventListener('DOMContentLoaded', function() {
+  const overlay = document.getElementById('imageOverlay');
+  const closeBtn = document.getElementById('closeImageOverlay');
+  closeBtn.onclick = function() {
+    overlay.style.display = 'none';
+    document.body.style.overflow = '';
+    window.scrollTo({ top: lastScrollY });
+    // Pause video if open
+    const overlayVideo = document.getElementById('overlayVideo');
+    overlayVideo.pause && overlayVideo.pause();
+  };
+  overlay.onclick = function(e) {
+    if (e.target === overlay) closeBtn.onclick();
+  };
+});
 
 function onScroll() {
   // Infinite scroll

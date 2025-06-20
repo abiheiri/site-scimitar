@@ -54,6 +54,12 @@
       </div>
     </div>
     <div class="gallery" id="gallery"></div>
+    <!-- Image Overlay for Fullscreen View -->
+    <div id="imageOverlay" style="display:none; position:fixed; z-index:3000; top:0; left:0; width:100vw; height:100vh; background:rgba(24,24,24,0.98); justify-content:center; align-items:center;">
+      <button id="closeImageOverlay" style="position:absolute; top:32px; right:32px; z-index:3100; background:#fff; color:#222; border:none; border-radius:50%; width:40px; height:40px; font-size:2rem;">&times;</button>
+      <img id="overlayImg" src="" alt="Full Image" style="max-width:90vw; max-height:90vh; border-radius:12px; box-shadow:0 2px 24px #000a; display:block; margin:auto;" />
+      <video id="overlayVideo" controls autoplay loop muted playsinline style="max-width:90vw; max-height:90vh; border-radius:12px; box-shadow:0 2px 24px #000a; display:none; margin:auto;"></video>
+    </div>
     <button class="scroll-top-btn" id="scrollTopBtn" title="Back to top">&#8679;</button>
     <footer class="mt-5 mb-3 text-secondary small">
       &copy; 2025 Scimitar LLC. All rights reserved.
