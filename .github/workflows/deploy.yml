@@ -1,0 +1,33 @@
+name: Deploy to Production
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      #
+      # This creates a manifest.js file in the images/guitars directory that lists all the image and video files. 
+      # The production branch uses this manifest to know which media files to load.
+      #
+      - name: Generate image manifest 
+        run: |
+          cd images/guitars
+          echo "window.GUITAR_IMAGES = [" > manifest.js
+          find . -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.mp4' -o -iname '*.webp' \) \
+            | sed 's|^\./||' | sort | while read f; do
+              echo "  \"images/guitars/$f\","
+            done >> manifest.js
+          echo "];" >> manifest.js
+
+      - name: Deploy to production branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "deploy: auto-generate manifest and publish"
+          git push --force origin HEAD:production
