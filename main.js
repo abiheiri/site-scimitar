@@ -199,12 +199,21 @@ function setupAboutOverlay() {
   const miniAboutBtn = document.getElementById('miniAboutBtn');
   const aboutOverlay = document.getElementById('aboutOverlay');
   const closeAbout = document.getElementById('closeAbout');
-  const openAbout = () => { aboutOverlay.classList.add('active'); };
+  const openAbout = () => {
+    aboutOverlay.classList.add('active');
+    closeAbout.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
+  const closeAboutFn = () => {
+    aboutOverlay.classList.remove('active');
+    closeAbout.classList.remove('active');
+    document.body.style.overflow = '';
+  };
   aboutBtn.onclick = openAbout;
   miniAboutBtn.onclick = openAbout;
-  closeAbout.onclick = () => { aboutOverlay.classList.remove('active'); };
+  closeAbout.onclick = closeAboutFn;
   aboutOverlay.onclick = (e) => {
-    if (e.target === aboutOverlay) aboutOverlay.classList.remove('active');
+    if (e.target === aboutOverlay) closeAboutFn();
   };
 }
 
