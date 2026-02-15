@@ -7,16 +7,42 @@
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <!-- Bootstrap 5.3 CSS via CDN -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
   <style>
     @font-face {
       font-family: 'ScimitarPS';
       src: url('fonts/fontps.ttf') format('truetype');
       font-display: swap;
     }
-    body { background: #181818; color: #fff; min-height: 100vh; }
+    body {
+      background: #181818; color: #fff; min-height: 100vh; font-family: 'Inter', sans-serif;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+    }
     h1, .arabian-title { font-family: 'ScimitarPS', serif; font-size: 2.5rem; letter-spacing: 2px; }
     .logo { height: 48px; margin: 16px 0; }
-    .about-btn { position: fixed; top: 24px; right: 24px; z-index: 1050; }
+    .hero {
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      min-height: 100vh; position: relative;
+    }
+    .hero .logo { height: 120px; margin: 24px 0; }
+    .hero h1 { font-size: 3.5rem; }
+    .scroll-arrow {
+      position: absolute; bottom: 32px;
+      animation: bounce 2s ease infinite;
+      font-size: 3.5rem; color: #d4920a; cursor: pointer;
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(12px); }
+    }
+    .about-btn {
+      position: fixed; top: 24px; right: 24px; z-index: 1050;
+      color: #d4920a; background: none; border: none; font-family: 'Inter', sans-serif;
+      font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      opacity: 0.7; transition: opacity 0.2s;
+    }
+    .about-btn:hover { opacity: 1; }
+    .mini-header.visible ~ .container .about-btn { opacity: 0; pointer-events: none; }
     .about-overlay {
       display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(24,24,24,0.98); color: #fff; justify-content: center; align-items: center; text-align: left;
@@ -24,26 +50,104 @@
     }
     .about-overlay.active { display: flex; }
     .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 16px; }
-    .gallery-img { border-radius: 12px; box-shadow: 0 2px 12px #0008; max-width: 100vw; max-height: 60vh; object-fit: cover; background: #222; }
+    .gallery-img {
+      border-radius: 12px; box-shadow: 0 2px 12px #0008; height: 300px; flex: 1 1 300px; object-fit: cover; background: #222; max-width: 600px;
+      opacity: 0; transform: translateY(40px);
+      transition: opacity 0.7s ease, transform 0.7s ease;
+    }
+    .gallery-img.visible {
+      opacity: 1; transform: translateY(0);
+    }
+    .gallery-img.visible:hover {
+      transform: scale(1.04);
+      box-shadow: 0 8px 32px #d4920a33;
+      cursor: pointer;
+    }
     video.gallery-img { display: block; background: #222; }
+    .overlay-lightbox {
+      position: fixed; z-index: 3000; top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(24,24,24,0.98); display: flex; justify-content: center; align-items: center;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .overlay-lightbox.active { opacity: 1; pointer-events: auto; }
+    .overlay-close {
+      position: absolute; top: 32px; right: 32px; z-index: 3100;
+      background: #d4920a; color: #181818; border: none; border-radius: 50%;
+      width: 40px; height: 40px; font-size: 2rem;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+    }
+    .overlay-counter {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 3100; color: #fff8; font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; letter-spacing: 1px;
+    }
+    .overlay-media {
+      max-width: 90vw; max-height: 90vh; border-radius: 12px;
+      box-shadow: 0 2px 24px #000a; display: block; margin: auto;
+    }
+    .overlay-nav {
+      position: absolute; top: 50%; transform: translateY(-50%); z-index: 3100;
+      background: #fff2; color: #fff; border: none; border-radius: 50%;
+      width: 48px; height: 48px; font-size: 2.5rem;
+      display: flex; align-items: center; justify-content: center; cursor: pointer;
+      transition: background 0.2s;
+    }
+    .overlay-nav:hover { background: #d4920a66; }
+    .overlay-prev { left: 24px; }
+    .overlay-next { right: 24px; }
+    @media (max-width: 600px) {
+      .overlay-nav { width: 36px; height: 36px; font-size: 1.8rem; }
+      .overlay-prev { left: 8px; }
+      .overlay-next { right: 8px; }
+    }
+    .mini-header {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1040;
+      background: rgba(24,24,24,0.95); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 24px; box-shadow: 0 2px 12px #0004;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .mini-header.visible { opacity: 1; pointer-events: auto; }
+    .mini-header .logo { height: 28px; margin: 0; }
+    .mini-header .about-link {
+      color: #d4920a; background: none; border: none; font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      opacity: 0.7; transition: opacity 0.2s;
+    }
+    .mini-header .about-link:hover { opacity: 1; }
     .scroll-top-btn {
       display: none; position: fixed; bottom: 32px; right: 32px; z-index: 1100;
-      background: #222; color: #fff; border: none; border-radius: 50%; width: 48px; height: 48px;
+      background: #d4920a; color: #181818; border: none; border-radius: 50%; width: 48px; height: 48px;
       box-shadow: 0 2px 8px #0006; font-size: 2rem; align-items: center; justify-content: center;
     }
     .scroll-top-btn.show { display: flex; }
+    .site-footer {
+      margin-top: 64px; padding: 40px 0 24px; text-align: center;
+      border-top: 1px solid #ffffff0a;
+    }
+    .footer-logo { height: 36px; opacity: 0.4; margin-bottom: 12px; }
+    .footer-copy { color: #fff4; font-size: 0.75rem; }
     @media (max-width: 600px) {
-      .gallery-img { max-width: 98vw; max-height: 40vh; }
+      .gallery-img { height: 220px; flex: 1 1 160px; max-width: 100%; }
       .about-overlay { font-size: 1rem; padding: 16px; }
       h1, .arabian-title { font-size: 1.7rem; }
+      .hero h1 { font-size: 2.2rem; }
+      .hero .logo { height: 80px; }
     }
   </style>
 </head>
-<body>
+<body style="opacity:0; transition: opacity 0.8s ease;">
+  <div class="mini-header" id="miniHeader">
+    <img src="images/logoWhite.png" alt="Scimitar" class="logo">
+    <button class="about-link" id="miniAboutBtn">About</button>
+  </div>
   <div class="container text-center">
-    <h1 class="mt-3 mb-2 arabian-title">Scimitar Guitars</h1>
-    <img src="images/logoWhite.png" alt="Scimitar Guitars Logo" class="logo">
-    <button class="btn btn-outline-light about-btn" id="aboutBtn">About</button>
+    <div class="hero">
+      <h1 class="arabian-title">Scimitar Guitars</h1>
+      <img src="images/logoWhite.png" alt="Scimitar Guitars Logo" class="logo">
+      <div class="scroll-arrow" id="scrollArrow">&#8681;</div>
+    </div>
+    <button class="about-btn" id="aboutBtn">About</button>
     <div class="about-overlay" id="aboutOverlay">
       <div>
         <h2>About Scimitar Guitars</h2>
@@ -51,24 +155,29 @@
         <p>I'm intentional about materials. Woods like purpleheart and wenge show up where they make sense, and the hardware is quality throughout. And I don't drown any of it in thick lacquer the way the big manufacturers do. I want you to feel the wood. The finish is there to protect against moisture, not to turn the guitar into a plastic shell.</p>
         <p>Electronically, push pull knobs give you coil splitting and phase switching. People see a superstrat and assume it's a one dimensional metal machine. These aren't that. There's real range here.</p>
         <p>Stainless steel frets on every build because I don't see the point in anything less durable. And sometimes I'll throw in glow inlays just because they look cool.</p>
-        <p>More from me &rarr; <a href="http://www.abiheiri.com" target="_blank" class="text-light">abiheiri.com</a></p>
+        <p>More from me &rarr; <a href="http://www.abiheiri.com" target="_blank" style="color:#d4920a">abiheiri.com</a></p>
         <button class="btn btn-light mt-3" id="closeAbout">Close</button>
       </div>
     </div>
     <div class="gallery" id="gallery"></div>
     <!-- Image Overlay for Fullscreen View -->
-    <div id="imageOverlay" style="display:none; position:fixed; z-index:3000; top:0; left:0; width:100vw; height:100vh; background:rgba(24,24,24,0.98); justify-content:center; align-items:center;">
-      <button id="closeImageOverlay" style="position:absolute; top:32px; right:32px; z-index:3100; background:#fff; color:#222; border:none; border-radius:50%; width:40px; height:40px; font-size:2rem; display:flex; align-items:center; justify-content:center;">&times;</button>
-      <img id="overlayImg" src="" alt="Full Image" style="max-width:90vw; max-height:90vh; border-radius:12px; box-shadow:0 2px 24px #000a; display:block; margin:auto;" />
-      <video id="overlayVideo" controls autoplay loop muted playsinline style="max-width:90vw; max-height:90vh; border-radius:12px; box-shadow:0 2px 24px #000a; display:none; margin:auto;"></video>
+    <div id="imageOverlay" class="overlay-lightbox">
+      <button id="closeImageOverlay" class="overlay-close">&times;</button>
+      <div id="overlayCounter" class="overlay-counter"></div>
+      <button id="overlayPrev" class="overlay-nav overlay-prev">&#8249;</button>
+      <button id="overlayNext" class="overlay-nav overlay-next">&#8250;</button>
+      <img id="overlayImg" src="" alt="Full Image" class="overlay-media" />
+      <video id="overlayVideo" controls autoplay loop muted playsinline class="overlay-media" style="display:none;"></video>
     </div>
     <button class="scroll-top-btn" id="scrollTopBtn" title="Back to top">&#8679;</button>
-    <footer class="mt-5 mb-3 text-secondary small">
-      &copy; 2025 Scimitar LLC. All rights reserved.
+    <footer class="site-footer">
+      <img src="images/logoWhite.png" alt="Scimitar Guitars" class="footer-logo">
+      <div class="footer-copy">&copy; 2025 Scimitar LLC. All rights reserved.</div>
     </footer>
   </div>
   <!-- Bootstrap JS via CDN -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <script src="main.js"></script>
 </body>
 </html>

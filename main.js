@@ -19,6 +19,16 @@ function getImageWidth() {
   return 500;
 }
 
+// Scroll-reveal observer
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+      revealObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.1 });
+
 // Gallery logic
 let loadedCount = 0;
 const BATCH_SIZE = 6;
@@ -32,7 +42,6 @@ function loadNextBatch() {
     if (src.endsWith('.mp4')) {
       const video = document.createElement('video');
       video.className = 'gallery-img';
-      video.style.width = width + 'px';
       video.controls = true;
       video.autoplay = true;
       video.loop = true;
@@ -49,19 +58,20 @@ function loadNextBatch() {
         showOverlay('video', src);
       });
       gallery.appendChild(video);
+      revealObserver.observe(video);
     } else {
-      const img = document.createElement('img');
+      const img = new Image();
       img.src = src;
       img.className = 'gallery-img';
-      img.style.width = width + 'px';
-      img.loading = 'lazy';
       img.alt = 'Scimitar Guitar';
-      // Overlay click for image
       img.addEventListener('click', function(e) {
         e.preventDefault();
         showOverlay('img', src);
       });
-      gallery.appendChild(img);
+      img.onload = () => {
+        gallery.appendChild(img);
+        revealObserver.observe(img);
+      };
     }
   });
   loadedCount += toLoad.length;
@@ -69,37 +79,90 @@ function loadNextBatch() {
 
 // Overlay logic
 let lastScrollY = 0;
+let currentOverlayIndex = -1;
+
 function showOverlay(type, src) {
   lastScrollY = window.scrollY;
   const overlay = document.getElementById('imageOverlay');
+  const overlayImg = document.getElementById('overlayImg');
+  const overlayVideo = document.getElementById('overlayVideo');
+  currentOverlayIndex = images.indexOf(src);
+  if (type === 'img') {
+    overlayImg.src = src;
+    overlayImg.style.display = 'block';
+    overlayVideo.style.display = 'none';
+    overlayVideo.pause && overlayVideo.pause();
+  } else {
+    overlayVideo.src = src;
+    overlayVideo.style.display = 'block';
+    overlayImg.style.display = 'none';
+  }
+  overlay.classList.add('active');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('overlayCounter').textContent = (currentOverlayIndex + 1) + ' / ' + images.length;
+}
+
+function closeOverlay() {
+  const overlay = document.getElementById('imageOverlay');
+  const overlayVideo = document.getElementById('overlayVideo');
+  overlay.classList.remove('active');
+  document.body.style.overflow = '';
+  window.scrollTo({ top: lastScrollY });
+  overlayVideo.pause && overlayVideo.pause();
+  currentOverlayIndex = -1;
+}
+
+function navigateOverlay(direction) {
+  if (currentOverlayIndex === -1) return;
+  let newIndex = currentOverlayIndex + direction;
+  // Load more if near the end
+  if (newIndex >= loadedCount - 2 && loadedCount < images.length) loadNextBatch();
+  if (newIndex < 0) newIndex = images.length - 1;
+  if (newIndex >= images.length) newIndex = 0;
+  const src = images[newIndex];
+  const type = src.endsWith('.mp4') ? 'video' : 'img';
+  currentOverlayIndex = newIndex;
   const overlayImg = document.getElementById('overlayImg');
   const overlayVideo = document.getElementById('overlayVideo');
   if (type === 'img') {
     overlayImg.src = src;
     overlayImg.style.display = 'block';
     overlayVideo.style.display = 'none';
+    overlayVideo.pause && overlayVideo.pause();
   } else {
     overlayVideo.src = src;
     overlayVideo.style.display = 'block';
     overlayImg.style.display = 'none';
   }
-  overlay.style.display = 'flex';
-  document.body.style.overflow = 'hidden';
+  document.getElementById('overlayCounter').textContent = (currentOverlayIndex + 1) + ' / ' + images.length;
 }
+
 document.addEventListener('DOMContentLoaded', function() {
   const overlay = document.getElementById('imageOverlay');
-  const closeBtn = document.getElementById('closeImageOverlay');
-  closeBtn.onclick = function() {
-    overlay.style.display = 'none';
-    document.body.style.overflow = '';
-    window.scrollTo({ top: lastScrollY });
-    // Pause video if open
-    const overlayVideo = document.getElementById('overlayVideo');
-    overlayVideo.pause && overlayVideo.pause();
-  };
-  overlay.onclick = function(e) {
-    if (e.target === overlay) closeBtn.onclick();
-  };
+  document.getElementById('closeImageOverlay').onclick = closeOverlay;
+  document.getElementById('overlayPrev').onclick = () => navigateOverlay(-1);
+  document.getElementById('overlayNext').onclick = () => navigateOverlay(1);
+  overlay.onclick = function(e) { if (e.target === overlay) closeOverlay(); };
+
+  // Keyboard navigation
+  document.addEventListener('keydown', function(e) {
+    if (currentOverlayIndex === -1) return;
+    if (e.key === 'Escape') closeOverlay();
+    else if (e.key === 'ArrowLeft') navigateOverlay(-1);
+    else if (e.key === 'ArrowRight') navigateOverlay(1);
+  });
+
+  // Swipe navigation
+  let touchStartX = 0;
+  overlay.addEventListener('touchstart', function(e) {
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive: true });
+  overlay.addEventListener('touchend', function(e) {
+    const diff = touchStartX - e.changedTouches[0].screenX;
+    if (Math.abs(diff) > 50) {
+      navigateOverlay(diff > 0 ? 1 : -1);
+    }
+  }, { passive: true });
 });
 
 function onScroll() {
@@ -111,6 +174,20 @@ function onScroll() {
   const btn = document.getElementById('scrollTopBtn');
   if (window.scrollY > 200) btn.classList.add('show');
   else btn.classList.remove('show');
+  // Hero + mini-header
+  const hero = document.querySelector('.hero');
+  const miniHeader = document.getElementById('miniHeader');
+  if (hero && miniHeader) {
+    if (window.scrollY > hero.offsetHeight * 0.8) miniHeader.classList.add('visible');
+    else miniHeader.classList.remove('visible');
+  }
+  // Hero parallax fade-out
+  if (hero) {
+    const heroH = hero.offsetHeight;
+    const progress = Math.min(window.scrollY / heroH, 1);
+    hero.style.opacity = 1 - progress;
+    hero.style.transform = 'translateY(' + (progress * -60) + 'px)';
+  }
 }
 
 function scrollToTop() {
@@ -119,9 +196,12 @@ function scrollToTop() {
 
 function setupAboutOverlay() {
   const aboutBtn = document.getElementById('aboutBtn');
+  const miniAboutBtn = document.getElementById('miniAboutBtn');
   const aboutOverlay = document.getElementById('aboutOverlay');
   const closeAbout = document.getElementById('closeAbout');
-  aboutBtn.onclick = () => { aboutOverlay.classList.add('active'); };
+  const openAbout = () => { aboutOverlay.classList.add('active'); };
+  aboutBtn.onclick = openAbout;
+  miniAboutBtn.onclick = openAbout;
   closeAbout.onclick = () => { aboutOverlay.classList.remove('active'); };
   aboutOverlay.onclick = (e) => {
     if (e.target === aboutOverlay) aboutOverlay.classList.remove('active');
@@ -141,6 +221,10 @@ function onResize() {
 }
 
 window.addEventListener('DOMContentLoaded', () => {
+  // Reset scroll position on refresh so gallery animates from the top
+  window.scrollTo(0, 0);
+  // Smooth page entrance
+  document.body.style.opacity = '1';
   // Load manifest
   const script = document.createElement('script');
   script.src = 'images/guitars/manifest.js';
@@ -151,6 +235,10 @@ window.addEventListener('DOMContentLoaded', () => {
     window.addEventListener('resize', onResize);
     setupAboutOverlay();
     setupScrollTopBtn();
+    // Scroll arrow clicks past the hero
+    document.getElementById('scrollArrow').onclick = () => {
+      document.getElementById('gallery').scrollIntoView({ behavior: 'smooth' });
+    };
   };
   document.body.appendChild(script);
 });
