@@ -42,6 +42,7 @@
       opacity: 0.7; transition: opacity 0.2s;
     }
     .about-btn:hover { opacity: 1; }
+    .mini-header.visible ~ .container .about-btn { opacity: 0; pointer-events: none; }
     .about-overlay {
       display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100vw; height: 100vh;
       background: rgba(24,24,24,0.98); color: #fff; justify-content: center; align-items: center; text-align: left;
@@ -75,6 +76,11 @@
       width: 40px; height: 40px; font-size: 2rem;
       display: flex; align-items: center; justify-content: center; cursor: pointer;
     }
+    .overlay-counter {
+      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+      z-index: 3100; color: #fff8; font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; letter-spacing: 1px;
+    }
     .overlay-media {
       max-width: 90vw; max-height: 90vh; border-radius: 12px;
       box-shadow: 0 2px 24px #000a; display: block; margin: auto;
@@ -94,12 +100,33 @@
       .overlay-prev { left: 8px; }
       .overlay-next { right: 8px; }
     }
+    .mini-header {
+      position: fixed; top: 0; left: 0; width: 100%; z-index: 1040;
+      background: rgba(24,24,24,0.95); backdrop-filter: blur(8px);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 10px 24px; box-shadow: 0 2px 12px #0004;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .mini-header.visible { opacity: 1; pointer-events: auto; }
+    .mini-header .logo { height: 28px; margin: 0; }
+    .mini-header .about-link {
+      color: #d4920a; background: none; border: none; font-family: 'Inter', sans-serif;
+      font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
+      opacity: 0.7; transition: opacity 0.2s;
+    }
+    .mini-header .about-link:hover { opacity: 1; }
     .scroll-top-btn {
       display: none; position: fixed; bottom: 32px; right: 32px; z-index: 1100;
       background: #d4920a; color: #181818; border: none; border-radius: 50%; width: 48px; height: 48px;
       box-shadow: 0 2px 8px #0006; font-size: 2rem; align-items: center; justify-content: center;
     }
     .scroll-top-btn.show { display: flex; }
+    .site-footer {
+      margin-top: 64px; padding: 40px 0 24px; text-align: center;
+      border-top: 1px solid #ffffff0a;
+    }
+    .footer-logo { height: 36px; opacity: 0.4; margin-bottom: 12px; }
+    .footer-copy { color: #fff4; font-size: 0.75rem; }
     @media (max-width: 600px) {
       .gallery-img { height: 220px; flex: 1 1 160px; max-width: 100%; }
       .about-overlay { font-size: 1rem; padding: 16px; }
@@ -109,7 +136,11 @@
     }
   </style>
 </head>
-<body>
+<body style="opacity:0; transition: opacity 0.8s ease;">
+  <div class="mini-header" id="miniHeader">
+    <img src="images/logoWhite.png" alt="Scimitar" class="logo">
+    <button class="about-link" id="miniAboutBtn">About</button>
+  </div>
   <div class="container text-center">
     <div class="hero">
       <h1 class="arabian-title">Scimitar Guitars</h1>
@@ -132,14 +163,16 @@
     <!-- Image Overlay for Fullscreen View -->
     <div id="imageOverlay" class="overlay-lightbox">
       <button id="closeImageOverlay" class="overlay-close">&times;</button>
+      <div id="overlayCounter" class="overlay-counter"></div>
       <button id="overlayPrev" class="overlay-nav overlay-prev">&#8249;</button>
       <button id="overlayNext" class="overlay-nav overlay-next">&#8250;</button>
       <img id="overlayImg" src="" alt="Full Image" class="overlay-media" />
       <video id="overlayVideo" controls autoplay loop muted playsinline class="overlay-media" style="display:none;"></video>
     </div>
     <button class="scroll-top-btn" id="scrollTopBtn" title="Back to top">&#8679;</button>
-    <footer class="mt-5 mb-3 text-secondary small">
-      &copy; 2025 Scimitar LLC. All rights reserved.
+    <footer class="site-footer">
+      <img src="images/logoWhite.png" alt="Scimitar Guitars" class="footer-logo">
+      <div class="footer-copy">&copy; 2025 Scimitar LLC. All rights reserved.</div>
     </footer>
   </div>
   <!-- Bootstrap JS via CDN -->

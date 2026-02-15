@@ -99,6 +99,7 @@ function showOverlay(type, src) {
   }
   overlay.classList.add('active');
   document.body.style.overflow = 'hidden';
+  document.getElementById('overlayCounter').textContent = (currentOverlayIndex + 1) + ' / ' + images.length;
 }
 
 function closeOverlay() {
@@ -133,6 +134,7 @@ function navigateOverlay(direction) {
     overlayVideo.style.display = 'block';
     overlayImg.style.display = 'none';
   }
+  document.getElementById('overlayCounter').textContent = (currentOverlayIndex + 1) + ' / ' + images.length;
 }
 
 document.addEventListener('DOMContentLoaded', function() {
@@ -172,8 +174,14 @@ function onScroll() {
   const btn = document.getElementById('scrollTopBtn');
   if (window.scrollY > 200) btn.classList.add('show');
   else btn.classList.remove('show');
-  // Hero parallax fade-out
+  // Hero + mini-header
   const hero = document.querySelector('.hero');
+  const miniHeader = document.getElementById('miniHeader');
+  if (hero && miniHeader) {
+    if (window.scrollY > hero.offsetHeight * 0.8) miniHeader.classList.add('visible');
+    else miniHeader.classList.remove('visible');
+  }
+  // Hero parallax fade-out
   if (hero) {
     const heroH = hero.offsetHeight;
     const progress = Math.min(window.scrollY / heroH, 1);
@@ -188,9 +196,12 @@ function scrollToTop() {
 
 function setupAboutOverlay() {
   const aboutBtn = document.getElementById('aboutBtn');
+  const miniAboutBtn = document.getElementById('miniAboutBtn');
   const aboutOverlay = document.getElementById('aboutOverlay');
   const closeAbout = document.getElementById('closeAbout');
-  aboutBtn.onclick = () => { aboutOverlay.classList.add('active'); };
+  const openAbout = () => { aboutOverlay.classList.add('active'); };
+  aboutBtn.onclick = openAbout;
+  miniAboutBtn.onclick = openAbout;
   closeAbout.onclick = () => { aboutOverlay.classList.remove('active'); };
   aboutOverlay.onclick = (e) => {
     if (e.target === aboutOverlay) aboutOverlay.classList.remove('active');
@@ -212,6 +223,8 @@ function onResize() {
 window.addEventListener('DOMContentLoaded', () => {
   // Reset scroll position on refresh so gallery animates from the top
   window.scrollTo(0, 0);
+  // Smooth page entrance
+  document.body.style.opacity = '1';
   // Load manifest
   const script = document.createElement('script');
   script.src = 'images/guitars/manifest.js';
