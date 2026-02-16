@@ -1,4 +1,7 @@
 window.GUITAR_IMAGES = [
+  "images/guitars/A2670B1B-CCBD-4663-856E-329EFD82F677.JPG",
+  "images/guitars/A2A8B679-7224-4FD7-B25C-AC51258E4C34.JPG",
+  "images/guitars/EF001C5B-9AED-4CC2-AB9B-BE07877369E1.JPG",
   "images/guitars/scimitar1.jpg",
   "images/guitars/scimitar1.mp4",
   "images/guitars/scimitar10.jpg",
