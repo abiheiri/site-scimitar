@@ -11,10 +11,29 @@ jobs:
       - uses: actions/checkout@v4
 
       #
-      # This creates a manifest.js file in the images/guitars directory that lists all the image and video files. 
+      # Auto-resize any oversized images to max 1200px (retina-friendly for gallery).
+      # This means you can drop full-res photos straight from your camera —
+      # the pipeline handles optimization so you never have to think about it.
+      #
+      - name: Optimize images
+        run: |
+          sudo apt-get install -y imagemagick
+          cd images/guitars
+          for f in *.jpg *.jpeg *.png *.webp; do
+            [ -f "$f" ] || continue
+            # Get the larger dimension
+            max_dim=$(identify -format "%[fx:max(w,h)]" "$f" 2>/dev/null || echo 0)
+            if [ "$max_dim" -gt 1200 ]; then
+              echo "Resizing $f ($max_dim px -> 1200px max)"
+              mogrify -resize 1200x1200\> -quality 82 "$f"
+            fi
+          done
+
+      #
+      # This creates a manifest.js file in the images/guitars directory that lists all the image and video files.
       # The production branch uses this manifest to know which media files to load.
       #
-      - name: Generate image manifest 
+      - name: Generate image manifest
         run: |
           cd images/guitars
           echo "window.GUITAR_IMAGES = [" > manifest.js
