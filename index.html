@@ -3,189 +3,746 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Scimitar Guitars Gallery</title>
+  <title>Scimitar Guitars</title>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
-  <!-- Bootstrap 5.3 CSS via CDN -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
     @font-face {
       font-family: 'ScimitarPS';
       src: url('fonts/fontps.ttf') format('truetype');
       font-display: swap;
     }
+
+    /* ── Reset & Foundation ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #090807;
+      --bg-elevated: #12110f;
+      --surface: #1a1816;
+      --amber: #c8923c;
+      --amber-dim: #c8923c44;
+      --amber-glow: #c8923c18;
+      --cream: #e8dcc8;
+      --cream-dim: #e8dcc866;
+      --white: #f5f0e8;
+      --text-muted: #7a7060;
+      --border: #ffffff08;
+      --font-display: 'ScimitarPS', 'Playfair Display', serif;
+      --font-heading: 'Playfair Display', serif;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scrollbar-width: thin;
+      scrollbar-color: var(--amber-dim) transparent;
+    }
+
     body {
-      background: #181818; color: #fff; min-height: 100vh; font-family: 'Inter', sans-serif;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      background: var(--bg);
+      color: var(--cream);
+      font-family: var(--font-body);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
-    h1, .arabian-title { font-family: 'ScimitarPS', serif; font-size: 2.5rem; letter-spacing: 2px; }
-    .logo { height: 48px; margin: 16px 0; }
-    .hero {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      min-height: 100vh; position: relative;
+
+    /* Noise texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      pointer-events: none;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
     }
-    .hero .logo { height: 120px; margin: 24px 0; }
-    .hero h1 { font-size: 3.5rem; }
-    .scroll-arrow {
-      position: absolute; bottom: 32px;
-      animation: bounce 2s ease infinite;
-      font-size: 3.5rem; color: #d4920a; cursor: pointer;
+
+    ::selection {
+      background: var(--amber);
+      color: var(--bg);
     }
-    @keyframes bounce {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(12px); }
+
+    a { color: var(--amber); text-decoration: none; transition: color 0.3s; }
+    a:hover { color: var(--cream); }
+
+    /* ── Page Entrance ── */
+    body.loading { opacity: 0; }
+    body.loaded {
+      opacity: 1;
+      transition: opacity 1s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .about-btn {
-      position: fixed; top: 24px; right: 24px; z-index: 1050;
-      color: #d4920a; background: none; border: none; font-family: 'Inter', sans-serif;
-      font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
-      opacity: 0.7; transition: opacity 0.2s;
+
+    /* ── Header / Navigation ── */
+    .site-header {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      z-index: 100;
+      padding: 24px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .about-btn:hover { opacity: 1; }
-    .mini-header.visible ~ .container .about-btn { opacity: 0; pointer-events: none; }
-    .about-overlay {
-      display: none; position: fixed; z-index: 2000; top: 0; left: 0; width: 100vw; height: 100vh;
-      height: 100dvh;
-      background: rgba(24,24,24,0.98); color: #fff; justify-content: center; align-items: center; text-align: left;
-      padding: 32px; font-size: 1.1rem; overflow-y: auto; -webkit-overflow-scrolling: touch;
+
+    .site-header.scrolled {
+      padding: 14px 40px;
+      background: rgba(9, 8, 7, 0.92);
+      backdrop-filter: blur(20px) saturate(1.2);
+      -webkit-backdrop-filter: blur(20px) saturate(1.2);
+      border-bottom: 1px solid var(--border);
     }
-    .about-overlay.active { display: flex; }
-    .about-close-btn {
-      position: fixed; top: 24px; right: 24px; z-index: 2100;
-      background: #d4920a; color: #181818; border: none; border-radius: 50%;
-      width: 40px; height: 40px; font-size: 2rem;
-      display: none; align-items: center; justify-content: center; cursor: pointer;
+
+    .header-logo {
+      height: 32px;
+      opacity: 0;
+      transform: translateY(-8px);
+      transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .about-overlay.active ~ .about-close-btn,
-    .about-close-btn.active { display: flex; }
-    .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 16px; margin-top: 16px; }
-    .gallery-img {
-      border-radius: 12px; box-shadow: 0 2px 12px #0008; height: 300px; flex: 1 1 300px; object-fit: cover; background: #222; max-width: 600px;
-      opacity: 0; transform: translateY(40px);
-      transition: opacity 0.7s ease, transform 0.7s ease;
+
+    .site-header.scrolled .header-logo {
+      opacity: 0.8;
+      transform: translateY(0);
     }
-    .gallery-img.visible {
-      opacity: 1; transform: translateY(0);
+
+    .header-logo:hover { opacity: 1; }
+
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      align-items: center;
     }
-    .gallery-img.visible:hover {
-      transform: scale(1.04);
-      box-shadow: 0 8px 32px #d4920a33;
+
+    .nav-link {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 0.8rem;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--cream-dim);
+      background: none;
+      border: none;
       cursor: pointer;
+      position: relative;
+      padding: 4px 0;
+      transition: color 0.3s;
     }
-    video.gallery-img { display: block; background: #222; }
-    .overlay-lightbox {
-      position: fixed; z-index: 3000; top: 0; left: 0; width: 100vw; height: 100vh;
-      background: rgba(24,24,24,0.98); display: flex; justify-content: center; align-items: center;
-      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: var(--amber);
+      transition: width 0.4s cubic-bezier(0.22, 1, 0.36, 1);
     }
-    .overlay-lightbox.active { opacity: 1; pointer-events: auto; }
-    .overlay-close {
-      position: absolute; top: 32px; right: 32px; z-index: 3100;
-      background: #d4920a; color: #181818; border: none; border-radius: 50%;
-      width: 40px; height: 40px; font-size: 2rem;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
+
+    .nav-link:hover { color: var(--cream); }
+    .nav-link:hover::after { width: 100%; }
+
+    /* ── Hero Section ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
     }
-    .overlay-counter {
-      position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
-      z-index: 3100; color: #fff8; font-family: 'Inter', sans-serif;
-      font-size: 0.85rem; letter-spacing: 1px;
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 40%, var(--amber-glow) 0%, transparent 70%);
+      opacity: 0;
+      animation: heroGlow 2s 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    .overlay-media {
-      max-width: 90vw; max-height: 90vh; border-radius: 12px;
-      box-shadow: 0 2px 24px #000a; display: block; margin: auto;
+
+    @keyframes heroGlow {
+      to { opacity: 1; }
     }
-    .overlay-nav {
-      position: absolute; top: 50%; transform: translateY(-50%); z-index: 3100;
-      background: #fff2; color: #fff; border: none; border-radius: 50%;
-      width: 48px; height: 48px; font-size: 2.5rem;
-      display: flex; align-items: center; justify-content: center; cursor: pointer;
-      transition: background 0.2s;
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
     }
-    .overlay-nav:hover { background: #d4920a66; }
-    .overlay-prev { left: 24px; }
-    .overlay-next { right: 24px; }
-    @media (max-width: 600px) {
-      .overlay-nav { width: 36px; height: 36px; font-size: 1.8rem; }
-      .overlay-prev { left: 8px; }
-      .overlay-next { right: 8px; }
+
+    .hero-logo {
+      height: 140px;
+      opacity: 0;
+      transform: scale(0.9);
+      animation: heroFadeUp 1.2s 0.3s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      margin-bottom: 32px;
+      filter: drop-shadow(0 0 40px var(--amber-dim));
     }
-    .mini-header {
-      position: fixed; top: 0; left: 0; width: 100%; z-index: 1040;
-      background: rgba(24,24,24,0.95); backdrop-filter: blur(8px);
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 10px 24px; box-shadow: 0 2px 12px #0004;
-      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+
+    .hero-title {
+      font-family: var(--font-display);
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      letter-spacing: 4px;
+      color: var(--white);
+      opacity: 0;
+      transform: translateY(24px);
+      animation: heroFadeUp 1.2s 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+      line-height: 1.1;
     }
-    .mini-header.visible { opacity: 1; pointer-events: auto; }
-    .mini-header .logo { height: 28px; margin: 0; }
-    .mini-header .about-link {
-      color: #d4920a; background: none; border: none; font-family: 'Inter', sans-serif;
-      font-size: 0.85rem; letter-spacing: 1px; text-transform: uppercase; cursor: pointer;
-      opacity: 0.7; transition: opacity 0.2s;
+
+    .hero-subtitle {
+      font-family: var(--font-heading);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(0.95rem, 2vw, 1.15rem);
+      color: var(--text-muted);
+      margin-top: 20px;
+      letter-spacing: 3px;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: heroFadeUp 1s 1s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    .mini-header .about-link:hover { opacity: 1; }
-    .scroll-top-btn {
-      display: none; position: fixed; bottom: 32px; right: 32px; z-index: 1100;
-      background: #d4920a; color: #181818; border: none; border-radius: 50%; width: 48px; height: 48px;
-      box-shadow: 0 2px 8px #0006; font-size: 2rem; align-items: center; justify-content: center;
+
+    .hero-line {
+      width: 48px;
+      height: 1px;
+      background: var(--amber);
+      margin: 28px auto 0;
+      opacity: 0;
+      animation: heroFadeUp 1s 1.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
     }
-    .scroll-top-btn.show { display: flex; }
+
+    @keyframes heroFadeUp {
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      cursor: pointer;
+      opacity: 0;
+      animation: heroFadeUp 1s 1.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    .scroll-indicator span {
+      font-size: 0.65rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    .scroll-line {
+      width: 1px;
+      height: 48px;
+      background: linear-gradient(to bottom, var(--amber), transparent);
+      animation: scrollPulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scrollPulse {
+      0%, 100% { opacity: 0.4; transform: scaleY(1); }
+      50% { opacity: 1; transform: scaleY(1.2); }
+    }
+
+    /* ── Gallery Section ── */
+    .gallery-section {
+      position: relative;
+      padding: 80px 24px 0;
+    }
+
+    .gallery-header {
+      text-align: center;
+      margin-bottom: 64px;
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .gallery-header.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .section-label {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 0.7rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-family: var(--font-heading);
+      font-size: clamp(1.8rem, 4vw, 2.8rem);
+      font-weight: 400;
+      color: var(--white);
+      line-height: 1.2;
+    }
+
+    /* Masonry Gallery */
+    .gallery {
+      max-width: 1400px;
+      margin: 0 auto;
+      columns: 3;
+      column-gap: 20px;
+    }
+
+    .gallery-item {
+      break-inside: avoid;
+      margin-bottom: 20px;
+      position: relative;
+      overflow: hidden;
+      border-radius: 4px;
+      cursor: pointer;
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+                  transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      min-height: 200px;
+      background: var(--surface);
+    }
+
+    .gallery-item.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .gallery-item::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, transparent 50%, rgba(9, 8, 7, 0.4) 100%);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+
+    .gallery-item:hover::after { opacity: 1; }
+
+    .gallery-item img,
+    .gallery-item video {
+      width: 100%;
+      display: block;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .gallery-item:hover img,
+    .gallery-item:hover video {
+      transform: scale(1.03);
+    }
+
+    /* ── Lightbox ── */
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 500;
+      background: rgba(5, 4, 3, 0.96);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .lightbox.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-media {
+      max-width: 90vw;
+      max-height: 88vh;
+      border-radius: 4px;
+      box-shadow: 0 24px 80px rgba(0,0,0,0.6);
+      display: block;
+      opacity: 0;
+      transform: scale(0.95);
+      transition: all 0.4s 0.1s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .lightbox.active .lightbox-media {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    .lightbox-close {
+      position: absolute;
+      top: 28px;
+      right: 28px;
+      z-index: 510;
+      width: 44px;
+      height: 44px;
+      background: none;
+      border: 1px solid var(--cream-dim);
+      border-radius: 50%;
+      color: var(--cream);
+      font-size: 1.2rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .lightbox-close:hover {
+      background: var(--amber);
+      border-color: var(--amber);
+      color: var(--bg);
+    }
+
+    .lightbox-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 510;
+      width: 52px;
+      height: 52px;
+      background: none;
+      border: 1px solid #ffffff15;
+      border-radius: 50%;
+      color: var(--cream-dim);
+      font-size: 1.4rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .lightbox-nav:hover {
+      border-color: var(--amber);
+      color: var(--amber);
+      background: var(--amber-glow);
+    }
+
+    .lightbox-prev { left: 24px; }
+    .lightbox-next { right: 24px; }
+
+    .lightbox-counter {
+      position: absolute;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.75rem;
+      letter-spacing: 3px;
+      color: var(--text-muted);
+    }
+
+    /* ── About Panel (side drawer) ── */
+    .about-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: min(520px, 90vw);
+      height: 100vh;
+      height: 100dvh;
+      z-index: 200;
+      background: var(--bg-elevated);
+      border-left: 1px solid var(--border);
+      transform: translateX(100%);
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .about-panel.open {
+      transform: translateX(0);
+    }
+
+    .about-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 199;
+      background: rgba(5, 4, 3, 0.7);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s;
+    }
+
+    .about-backdrop.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .about-inner {
+      padding: 80px 48px 48px;
+    }
+
+    .about-close {
+      position: absolute;
+      top: 28px;
+      right: 28px;
+      width: 40px;
+      height: 40px;
+      background: none;
+      border: 1px solid var(--cream-dim);
+      border-radius: 50%;
+      color: var(--cream);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.3s;
+    }
+
+    .about-close:hover {
+      background: var(--amber);
+      border-color: var(--amber);
+      color: var(--bg);
+    }
+
+    .about-label {
+      font-family: var(--font-body);
+      font-weight: 400;
+      font-size: 0.65rem;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--amber);
+      margin-bottom: 24px;
+    }
+
+    .about-heading {
+      font-family: var(--font-heading);
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--white);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .about-rule {
+      width: 40px;
+      height: 1px;
+      background: var(--amber);
+      margin: 28px 0 32px;
+    }
+
+    .about-text p {
+      font-size: 0.95rem;
+      color: var(--cream-dim);
+      margin-bottom: 20px;
+      line-height: 1.85;
+    }
+
+    .about-text p:first-child::first-letter {
+      font-family: var(--font-heading);
+      font-size: 3.2rem;
+      float: left;
+      line-height: 1;
+      margin-right: 8px;
+      margin-top: 4px;
+      color: var(--amber);
+    }
+
+    .about-link-out {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      color: var(--amber);
+      letter-spacing: 1px;
+      margin-top: 16px;
+      padding-bottom: 2px;
+      border-bottom: 1px solid var(--amber-dim);
+      transition: border-color 0.3s;
+    }
+
+    .about-link-out:hover { border-color: var(--amber); }
+
+    .about-link-out svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 0.3s;
+    }
+
+    .about-link-out:hover svg { transform: translate(2px, -2px); }
+
+    /* ── Scroll To Top ── */
+    .scroll-top {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      z-index: 90;
+      width: 44px;
+      height: 44px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      color: var(--amber);
+      font-size: 1.1rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .scroll-top.visible {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+
+    .scroll-top:hover {
+      background: var(--amber);
+      color: var(--bg);
+      border-color: var(--amber);
+    }
+
+    /* ── Footer ── */
     .site-footer {
-      margin-top: 64px; padding: 40px 0 24px; text-align: center;
-      border-top: 1px solid #ffffff0a;
+      margin-top: 120px;
+      padding: 48px 24px;
+      text-align: center;
+      border-top: 1px solid var(--border);
     }
-    .footer-logo { height: 36px; opacity: 0.4; margin-bottom: 12px; }
-    .footer-copy { color: #fff4; font-size: 0.75rem; }
-    @media (max-width: 600px) {
-      .gallery-img { height: 220px; flex: 1 1 160px; max-width: 100%; }
-      .about-overlay { font-size: 1rem; padding: 16px; }
-      h1, .arabian-title { font-size: 1.7rem; }
-      .hero h1 { font-size: 2.2rem; }
-      .hero .logo { height: 80px; }
+
+    .footer-logo {
+      height: 28px;
+      opacity: 0.25;
+      margin-bottom: 16px;
+      transition: opacity 0.3s;
     }
+
+    .footer-logo:hover { opacity: 0.5; }
+
+    .footer-text {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 1024px) {
+      .gallery { columns: 2; column-gap: 16px; }
+      .gallery-item { margin-bottom: 16px; }
+    }
+
+    @media (max-width: 640px) {
+      .site-header { padding: 16px 20px; }
+      .site-header.scrolled { padding: 12px 20px; }
+      .nav-links { gap: 20px; }
+      .nav-link { font-size: 0.7rem; letter-spacing: 2px; }
+      .hero-logo { height: 100px; }
+      .gallery-section { padding: 48px 12px 0; }
+      .gallery { columns: 2; column-gap: 10px; }
+      .gallery-item { margin-bottom: 10px; border-radius: 3px; }
+      .gallery-header { margin-bottom: 40px; }
+      .about-inner { padding: 64px 28px 32px; }
+      .lightbox-nav { width: 40px; height: 40px; font-size: 1.1rem; }
+      .lightbox-prev { left: 12px; }
+      .lightbox-next { right: 12px; }
+      .site-footer { margin-top: 72px; }
+    }
+
+    @media (max-width: 400px) {
+      .gallery { columns: 1; }
+    }
+
+    /* ── Scrollbar ── */
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: var(--amber-dim); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: var(--amber); }
   </style>
 </head>
-<body style="opacity:0; transition: opacity 0.8s ease;">
-  <div class="mini-header" id="miniHeader">
-    <img src="images/logoWhite.png" alt="Scimitar" class="logo">
-    <button class="about-link" id="miniAboutBtn">About</button>
-  </div>
-  <div class="container text-center">
-    <div class="hero">
-      <h1 class="arabian-title">Scimitar Guitars</h1>
-      <img src="images/logoWhite.png" alt="Scimitar Guitars Logo" class="logo">
-      <div class="scroll-arrow" id="scrollArrow">&#8681;</div>
+<body class="loading">
+
+  <!-- Header -->
+  <header class="site-header" id="siteHeader">
+    <img src="images/logoWhite.png" alt="Scimitar" class="header-logo">
+    <nav class="nav-links">
+      <button class="nav-link" id="navGalleryBtn">Gallery</button>
+      <button class="nav-link" id="navAboutBtn">About</button>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero" id="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <img src="images/logoWhite.png" alt="Scimitar Guitars" class="hero-logo">
+      <h1 class="hero-title">Scimitar Guitars</h1>
+      <p class="hero-subtitle">Handcrafted Superstrats</p>
+      <div class="hero-line"></div>
     </div>
-    <button class="about-btn" id="aboutBtn">About</button>
-    <div class="about-overlay" id="aboutOverlay">
-      <div style="max-width:600px; padding-top:48px;">
-        <h2>About Scimitar Guitars</h2>
-        <p>I build superstrats. That's the starting point. Fast necks, deep contours, string ferrules instead of plates. Everything is oriented around getting out of the player's way, especially up high on the neck. No front fret markers either. Just clean.</p>
-        <p>I'm intentional about materials. Woods like purpleheart and wenge show up where they make sense, and the hardware is quality throughout. And I don't drown any of it in thick lacquer the way the big manufacturers do. I want you to feel the wood. The finish is there to protect against moisture, not to turn the guitar into a plastic shell.</p>
-        <p>Electronically, push pull knobs give you coil splitting and phase switching. People see a superstrat and assume it's a one dimensional metal machine. These aren't that. There's real range here.</p>
-        <p>Stainless steel frets on every build because I don't see the point in anything less durable. And sometimes I'll throw in glow inlays just because they look cool.</p>
-        <p>More from me &rarr; <a href="http://www.abiheiri.com" target="_blank" style="color:#d4920a">abiheiri.com</a></p>
-      </div>
+    <div class="scroll-indicator" id="scrollIndicator">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
     </div>
-    <button class="about-close-btn" id="closeAbout">&times;</button>
+  </section>
+
+  <!-- Gallery -->
+  <section class="gallery-section" id="gallerySection">
+    <div class="gallery-header" id="galleryHeader">
+      <div class="section-label">The Collection</div>
+    </div>
     <div class="gallery" id="gallery"></div>
-    <!-- Image Overlay for Fullscreen View -->
-    <div id="imageOverlay" class="overlay-lightbox">
-      <button id="closeImageOverlay" class="overlay-close">&times;</button>
-      <div id="overlayCounter" class="overlay-counter"></div>
-      <button id="overlayPrev" class="overlay-nav overlay-prev">&#8249;</button>
-      <button id="overlayNext" class="overlay-nav overlay-next">&#8250;</button>
-      <img id="overlayImg" src="" alt="Full Image" class="overlay-media" />
-      <video id="overlayVideo" controls autoplay loop muted playsinline class="overlay-media" style="display:none;"></video>
-    </div>
-    <button class="scroll-top-btn" id="scrollTopBtn" title="Back to top">&#8679;</button>
-    <footer class="site-footer">
-      <img src="images/logoWhite.png" alt="Scimitar Guitars" class="footer-logo">
-      <div class="footer-copy">&copy; 2025 Scimitar LLC. All rights reserved.</div>
-    </footer>
+  </section>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
+    <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8249;</button>
+    <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#8250;</button>
+    <img id="lightboxImg" class="lightbox-media" src="" alt="Guitar detail">
+    <video id="lightboxVideo" class="lightbox-media" style="display:none;" controls autoplay loop muted playsinline></video>
+    <div class="lightbox-counter" id="lightboxCounter"></div>
   </div>
-  <!-- Bootstrap JS via CDN -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- About Panel -->
+  <div class="about-backdrop" id="aboutBackdrop"></div>
+  <aside class="about-panel" id="aboutPanel">
+    <button class="about-close" id="aboutClose" aria-label="Close">&times;</button>
+    <div class="about-inner">
+      <div class="about-label">The Maker</div>
+      <h2 class="about-heading">About Scimitar</h2>
+      <div class="about-rule"></div>
+      <div class="about-text">
+        <p>I build superstrats. That's the starting point. Fast necks, deep contours, string ferrules instead of plates. Everything is built around getting out of the player's way, especially up high on the neck. No front fret markers either. Just clean.</p>
+        <p>I'm intentional about materials. Woods like purpleheart and wenge show up where they make sense, and the hardware is quality throughout. And I don't drown any of it in thick lacquer the way the big manufacturers do. I want you to feel the wood. The finish is there to protect against moisture, not to turn the guitar into a plastic shell.</p>
+        <p>The push-pull knobs give you coil splitting and phase switching. People see a superstrat and assume it's a one-dimensional metal machine. These aren't that. There's real range here.</p>
+        <p>Stainless steel frets on every build because I don't see the point in anything less durable. And sometimes I'll throw in glow inlays just because they look cool.</p>
+      </div>
+      <a href="http://www.abiheiri.com" target="_blank" rel="noopener" class="about-link-out">
+        More from me
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Scroll to Top -->
+  <button class="scroll-top" id="scrollTop" aria-label="Back to top">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 15l-6-6-6 6"/></svg>
+  </button>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <img src="images/logoWhite.png" alt="Scimitar Guitars" class="footer-logo">
+    <div class="footer-text">&copy; 2025 Scimitar LLC</div>
+  </footer>
+
   <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
   <script src="main.js"></script>
 </body>
