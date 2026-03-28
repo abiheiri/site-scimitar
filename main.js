@@ -56,6 +56,7 @@ function loadNextBatch() {
       video.loop = true;
       video.muted = true;
       video.playsInline = true;
+      video.addEventListener('loadeddata', () => video.classList.add('loaded'));
       const source = document.createElement('source');
       source.src = src;
       source.type = 'video/mp4';
@@ -68,6 +69,7 @@ function loadNextBatch() {
       const img = new Image();
       img.alt = 'Scimitar Guitar';
       img.loading = 'lazy';
+      img.addEventListener('load', () => img.classList.add('loaded'));
       item.appendChild(img);
       item.addEventListener('click', () => openLightbox(src));
       gallery.appendChild(item);
