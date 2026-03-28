@@ -69,6 +69,26 @@
     a { color: var(--amber); text-decoration: none; transition: color 0.3s; }
     a:hover { color: var(--cream); }
 
+    /* ── Skip Link ── */
+    .skip-link {
+      position: absolute;
+      top: -100%;
+      left: 16px;
+      z-index: 10000;
+      padding: 12px 24px;
+      background: var(--amber);
+      color: var(--bg);
+      font-weight: 500;
+      font-size: 0.85rem;
+      border-radius: 0 0 4px 4px;
+      transition: top 0.2s;
+    }
+
+    .skip-link:focus {
+      top: 0;
+      color: var(--bg);
+    }
+
     /* ── Page Entrance ── */
     body.loading { opacity: 0; }
     body.loaded {
@@ -87,7 +107,10 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+      transition: padding 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                  background 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                  backdrop-filter 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+                  border-bottom 0.5s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .site-header.scrolled {
@@ -406,7 +429,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
     }
 
     .lightbox-close:hover {
@@ -423,7 +446,7 @@
       width: 52px;
       height: 52px;
       background: none;
-      border: 1px solid #ffffff15;
+      border: 1px solid var(--border);
       border-radius: 50%;
       color: var(--cream-dim);
       font-size: 1.4rem;
@@ -431,7 +454,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
     }
 
     .lightbox-nav:hover {
@@ -497,8 +520,8 @@
       position: absolute;
       top: 28px;
       right: 28px;
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       background: none;
       border: 1px solid var(--cream-dim);
       border-radius: 50%;
@@ -508,7 +531,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: all 0.3s;
+      transition: background 0.3s, border-color 0.3s, color 0.3s;
     }
 
     .about-close:hover {
@@ -668,6 +691,29 @@
       .gallery { columns: 1; }
     }
 
+    /* ── Focus Visible ── */
+    :focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 2px;
+    }
+
+    button:focus-visible {
+      outline: 2px solid var(--amber);
+      outline-offset: 2px;
+    }
+
+    /* ── Reduced Motion ── */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+
+      html { scroll-behavior: auto; }
+    }
+
     /* ── Scrollbar ── */
     ::-webkit-scrollbar { width: 6px; }
     ::-webkit-scrollbar-track { background: transparent; }
@@ -676,6 +722,7 @@
   </style>
 </head>
 <body class="loading">
+  <a href="#gallerySection" class="skip-link">Skip to gallery</a>
 
   <!-- Header -->
   <header class="site-header" id="siteHeader">
@@ -710,7 +757,7 @@
   </section>
 
   <!-- Lightbox -->
-  <div class="lightbox" id="lightbox">
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Image viewer">
     <button class="lightbox-close" id="lightboxClose" aria-label="Close">&times;</button>
     <button class="lightbox-nav lightbox-prev" id="lightboxPrev" aria-label="Previous">&#8249;</button>
     <button class="lightbox-nav lightbox-next" id="lightboxNext" aria-label="Next">&#8250;</button>
@@ -721,7 +768,7 @@
 
   <!-- About Panel -->
   <div class="about-backdrop" id="aboutBackdrop"></div>
-  <aside class="about-panel" id="aboutPanel">
+  <aside class="about-panel" id="aboutPanel" role="dialog" aria-modal="true" aria-label="About Scimitar">
     <button class="about-close" id="aboutClose" aria-label="Close">&times;</button>
     <div class="about-inner">
       <div class="about-label">The Maker</div>
@@ -733,7 +780,7 @@
         <p>The push-pull knobs give you coil splitting and phase switching. People see a superstrat and assume it's a one-dimensional metal machine. These aren't that. There's real range here.</p>
         <p>Stainless steel frets on every build because I don't see the point in anything less durable. And sometimes I'll throw in glow inlays just because they look cool.</p>
       </div>
-      <a href="http://www.abiheiri.com" target="_blank" rel="noopener" class="about-link-out">
+      <a href="https://www.abiheiri.com" target="_blank" rel="noopener" class="about-link-out">
         More from me
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 17L17 7"/><path d="M7 7h10v10"/></svg>
       </a>
@@ -748,7 +795,7 @@
   <!-- Footer -->
   <footer class="site-footer">
     <img src="images/logoWhite.png" alt="Scimitar Guitars" class="footer-logo">
-    <div class="footer-text">&copy; 2025 Scimitar LLC</div>
+    <div class="footer-text">&copy; 2026 Scimitar LLC</div>
   </footer>
 
   <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
