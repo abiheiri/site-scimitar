@@ -53,12 +53,20 @@ let elHeader, elHero, elScrollTopBtn, elGallery, elLightbox, elLightboxImg,
     elAboutPanel, elAboutBackdrop, elAboutClose;
 
 // ── Scroll-reveal observer ──
+// Only reveal items that are both in-view AND media-loaded
+function tryReveal(item) {
+  if (item.dataset.inView === '1' && item.dataset.mediaLoaded === '1') {
+    const idx = parseInt(item.dataset.index, 10) || 0;
+    item.style.transitionDelay = ((idx % 3) * 0.1) + 's';
+    item.classList.add('revealed');
+  }
+}
+
 const revealObserver = new IntersectionObserver((entries) => {
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      const idx = parseInt(entry.target.dataset.index, 10) || 0;
-      entry.target.style.transitionDelay = ((idx % 3) * 0.1) + 's';
-      entry.target.classList.add('revealed');
+      entry.target.dataset.inView = '1';
+      tryReveal(entry.target);
       revealObserver.unobserve(entry.target);
     }
   });
@@ -100,7 +108,11 @@ function loadNextBatch() {
       video.loop = true;
       video.muted = true;
       video.playsInline = true;
-      video.addEventListener('loadeddata', () => video.classList.add('loaded'));
+      video.addEventListener('loadeddata', () => {
+        video.classList.add('loaded');
+        item.dataset.mediaLoaded = '1';
+        tryReveal(item);
+      });
       const source = document.createElement('source');
       source.src = src;
       source.type = 'video/mp4';
@@ -110,7 +122,11 @@ function loadNextBatch() {
       const img = new Image();
       img.alt = 'Scimitar Guitar';
       img.loading = 'lazy';
-      img.addEventListener('load', () => img.classList.add('loaded'));
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+        item.dataset.mediaLoaded = '1';
+        tryReveal(item);
+      });
       item.appendChild(img);
       // Set src after appending so layout is stable
       requestAnimationFrame(() => { img.src = src; });

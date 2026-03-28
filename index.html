@@ -361,14 +361,7 @@
     .gallery-item video {
       width: 100%;
       display: block;
-      opacity: 0;
-      transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-                  transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
-    }
-
-    .gallery-item img.loaded,
-    .gallery-item video.loaded {
-      opacity: 1;
+      transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
     }
 
     .gallery-item:hover img,
@@ -739,7 +732,7 @@
     <div class="hero-content">
       <img src="images/logoWhite.png" alt="Scimitar Guitars" class="hero-logo">
       <h1 class="hero-title">Scimitar Guitars</h1>
-      <p class="hero-subtitle">Handmade Guitars</p>
+      <p class="hero-subtitle">Handmade</p>
       <div class="hero-line"></div>
     </div>
     <div class="scroll-indicator" id="scrollIndicator">
@@ -795,7 +788,7 @@
   <!-- Footer -->
   <footer class="site-footer">
     <img src="images/logoWhite.png" alt="Scimitar Guitars" class="footer-logo">
-    <div class="footer-text">&copy; 2026 Scimitar LLC</div>
+    <div class="footer-text">&copy; 2026 Scimitar</div>
   </footer>
 
   <script>if ('scrollRestoration' in history) history.scrollRestoration = 'manual';</script>
