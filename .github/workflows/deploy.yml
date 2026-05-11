@@ -18,18 +18,19 @@ jobs:
         run: |
           sudo apt-get install -y imagemagick webp
           cd images/guitars
-          for f in *.jpg *.jpeg *.png; do
-            [ -f "$f" ] || continue
-            # Resize if larger than 1200px on any edge
-            max_dim=$(identify -format "%[fx:max(w,h)]" "$f" 2>/dev/null || echo 0)
-            if [ "$max_dim" -gt 1200 ]; then
-              echo "Resizing $f ($max_dim px -> 1200px max)"
-              mogrify -resize 1200x1200\> "$f"
-            fi
-            # Convert to WebP and delete the original
-            cwebp -q 82 "$f" -o "${f%.*}.webp"
-            rm "$f"
-          done
+          find . -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) \
+            | sed 's|^\./||' | while read f; do
+              [ -f "$f" ] || continue
+              # Resize if larger than 1200px on any edge
+              max_dim=$(identify -format "%[fx:max(w,h)]" "$f" 2>/dev/null || echo 0)
+              if [ "$max_dim" -gt 1200 ]; then
+                echo "Resizing $f ($max_dim px -> 1200px max)"
+                mogrify -resize 1200x1200\> "$f"
+              fi
+              # Convert to WebP and delete the original
+              cwebp -q 82 "$f" -o "${f%.*}.webp"
+              rm "$f"
+            done
 
       #
       # This creates a manifest.js file in the images/guitars directory that lists all the image and video files.
