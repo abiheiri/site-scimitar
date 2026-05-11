@@ -51,7 +51,7 @@ let removeAboutTrap = null;
 let lbScale = 1;
 let lbPanX = 0;
 let lbPanY = 0;
-let lbIsPinching = false;
+let lbGesture = null; // 'pinch' | 'pan' | 'swipe' | null
 let lbInitialPinchDist = 0;
 let lbInitialScale = 1;
 let lbInitialPanX = 0;
@@ -63,7 +63,7 @@ let lbLastTapX = 0;
 let lbLastTapY = 0;
 let lbTouchStartX = 0;
 let lbTouchStartY = 0;
-let lbIsDragging = false;
+
 
 // ── Cached DOM refs (set in init) ──
 let elHeader, elHero, elScrollTopBtn, elGallery, elLightbox, elLightboxImg,
@@ -364,8 +364,9 @@ window.addEventListener('DOMContentLoaded', () => {
   // Swipe / pinch / zoom support for lightbox
   elLightbox.addEventListener('touchstart', (e) => {
     if (e.touches.length === 2) {
-      // Start pinch
-      lbIsPinching = true;
+      // Stop Safari from starting its own page-zoom gesture
+      e.preventDefault();
+      lbGesture = 'pinch';
       const t1 = e.touches[0];
       const t2 = e.touches[1];
       lbInitialPinchDist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
@@ -381,7 +382,12 @@ window.addEventListener('DOMContentLoaded', () => {
       const t = e.touches[0];
       lbTouchStartX = t.screenX;
       lbTouchStartY = t.screenY;
-      lbIsDragging = false;
+
+      if (lbScale > 1.05) {
+        lbGesture = 'pan';
+      } else {
+        lbGesture = 'swipe';
+      }
 
       // Double-tap detection
       const now = Date.now();
@@ -394,7 +400,6 @@ window.addEventListener('DOMContentLoaded', () => {
         if (lbScale > 1.05) {
           resetLightboxZoom();
         } else {
-          // Zoom to 2.5x centered on tap point (relative to image center)
           const rect = elLightboxImg.getBoundingClientRect();
           const cx = t.clientX - (rect.left + rect.width / 2);
           const cy = t.clientY - (rect.top + rect.height / 2);
@@ -412,53 +417,61 @@ window.addEventListener('DOMContentLoaded', () => {
   }, { passive: false });
 
   elLightbox.addEventListener('touchmove', (e) => {
-    if (lbIsPinching && e.touches.length === 2) {
+    if (lbGesture === 'pinch' && e.touches.length === 2) {
       e.preventDefault();
       const t1 = e.touches[0];
       const t2 = e.touches[1];
       const dist = Math.hypot(t2.clientX - t1.clientX, t2.clientY - t1.clientY);
       const midX = (t1.clientX + t2.clientX) / 2;
       const midY = (t1.clientY + t2.clientY) / 2;
-      const newScale = Math.min(Math.max(lbInitialScale * (dist / lbInitialPinchDist), 1), 5);
-      lbScale = newScale;
+      lbScale = Math.min(Math.max(lbInitialScale * (dist / lbInitialPinchDist), 1), 5);
       lbPanX = lbInitialPanX + (midX - lbInitialMidX);
       lbPanY = lbInitialPanY + (midY - lbInitialMidY);
       applyLightboxTransform();
       return;
     }
 
-    if (e.touches.length === 1 && lbScale > 1.05) {
+    if (lbGesture === 'pan' && e.touches.length === 1) {
       e.preventDefault();
       const t = e.touches[0];
-      const dx = t.screenX - lbTouchStartX;
-      const dy = t.screenY - lbTouchStartY;
-      lbPanX += dx;
-      lbPanY += dy;
+      lbPanX += t.screenX - lbTouchStartX;
+      lbPanY += t.screenY - lbTouchStartY;
       lbTouchStartX = t.screenX;
       lbTouchStartY = t.screenY;
-      lbIsDragging = true;
       applyLightboxTransform();
     }
   }, { passive: false });
 
   elLightbox.addEventListener('touchend', (e) => {
-    if (lbIsPinching) {
-      if (e.touches.length < 2) {
-        lbIsPinching = false;
+    if (lbGesture === 'pinch') {
+      if (e.touches.length === 1 && lbScale > 1.05) {
+        // Lifted one finger while zoomed → continue panning with the other
+        lbGesture = 'pan';
+        const t = e.touches[0];
+        lbTouchStartX = t.screenX;
+        lbTouchStartY = t.screenY;
+      } else if (e.touches.length === 0) {
+        lbGesture = null;
       }
       return;
     }
 
-    if (e.changedTouches.length !== 1) return;
-    const t = e.changedTouches[0];
-    const diffX = lbTouchStartX - t.screenX;
-    const diffY = lbTouchStartY - t.screenY;
-
-    // Only navigate on single-finger horizontal swipe when not zoomed and not panning
-    if (lbScale <= 1.05 && !lbIsDragging && Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
-      navigateLightbox(diffX > 0 ? 1 : -1);
+    if (lbGesture === 'pan') {
+      if (e.touches.length === 0) lbGesture = null;
+      return;
     }
-    lbIsDragging = false;
+
+    if (lbGesture === 'swipe') {
+      lbGesture = null;
+      if (e.changedTouches.length !== 1) return;
+      const t = e.changedTouches[0];
+      const diffX = lbTouchStartX - t.screenX;
+      const diffY = lbTouchStartY - t.screenY;
+      const isMobile = window.matchMedia('(max-width: 640px)').matches;
+      if (!isMobile && Math.abs(diffX) > 50 && Math.abs(diffX) > Math.abs(diffY)) {
+        navigateLightbox(diffX > 0 ? 1 : -1);
+      }
+    }
   }, { passive: true });
 
   // Scroll to top
