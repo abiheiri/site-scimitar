@@ -66,7 +66,7 @@ let lbTouchStartY = 0;
 
 
 // ── Cached DOM refs (set in init) ──
-let elHeader, elHero, elScrollTopBtn, elGallery, elLightbox, elLightboxImg,
+let elHeader, elHero, elScrollTopBtn, elGallery, elGalleryColumns, elLightbox, elLightboxImg,
     elLightboxVideo, elLightboxClose, elLightboxCounter,
     elAboutPanel, elAboutBackdrop, elAboutClose;
 
@@ -150,7 +150,17 @@ function loadNextBatch() {
       requestAnimationFrame(() => { img.src = src; });
     }
 
-    elGallery.appendChild(item);
+    // Append to shortest column so existing items never move
+    let shortestCol = elGalleryColumns[0];
+    let shortestH = shortestCol.scrollHeight;
+    for (let c = 1; c < elGalleryColumns.length; c++) {
+      const h = elGalleryColumns[c].scrollHeight;
+      if (h < shortestH) {
+        shortestH = h;
+        shortestCol = elGalleryColumns[c];
+      }
+    }
+    shortestCol.appendChild(item);
     revealObserver.observe(item);
   });
   loadedCount += toLoad.length;
@@ -312,6 +322,14 @@ window.addEventListener('DOMContentLoaded', () => {
   elHero = document.getElementById('hero');
   elScrollTopBtn = document.getElementById('scrollTop');
   elGallery = document.getElementById('gallery');
+  elGalleryColumns = [];
+  const colCount = window.innerWidth <= 400 ? 1 : window.innerWidth <= 1024 ? 2 : 3;
+  for (let i = 0; i < colCount; i++) {
+    const col = document.createElement('div');
+    col.className = 'gallery-column';
+    elGallery.appendChild(col);
+    elGalleryColumns.push(col);
+  }
   elLightbox = document.getElementById('lightbox');
   elLightboxImg = document.getElementById('lightboxImg');
   elLightboxVideo = document.getElementById('lightboxVideo');
