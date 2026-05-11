@@ -156,12 +156,32 @@ function loadNextBatch() {
   loadedCount += toLoad.length;
 }
 
+// ── Viewport zoom lock (prevents Safari native pinch-zoom in lightbox) ──
+let originalViewportContent = null;
+
+function lockViewportZoom() {
+  const vp = document.querySelector('meta[name="viewport"]');
+  if (vp) {
+    originalViewportContent = vp.content;
+    vp.content = 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no';
+  }
+}
+
+function unlockViewportZoom() {
+  const vp = document.querySelector('meta[name="viewport"]');
+  if (vp && originalViewportContent !== null) {
+    vp.content = originalViewportContent;
+    originalViewportContent = null;
+  }
+}
+
 // ── Lightbox ──
 function openLightbox(src) {
   lastScrollY = window.scrollY;
   lastFocusedElement = document.activeElement;
   currentIndex = images.indexOf(src);
   showMedia(src);
+  lockViewportZoom();
   elLightbox.classList.add('active');
   document.body.style.overflow = 'hidden';
   updateCounter();
@@ -176,6 +196,7 @@ function closeLightbox() {
   if (elLightboxVideo) elLightboxVideo.pause();
   currentIndex = -1;
   resetLightboxZoom();
+  unlockViewportZoom();
   if (removeLightboxTrap) { removeLightboxTrap(); removeLightboxTrap = null; }
   if (lastFocusedElement) { lastFocusedElement.focus(); lastFocusedElement = null; }
 }
@@ -364,8 +385,6 @@ window.addEventListener('DOMContentLoaded', () => {
   // Swipe / pinch / zoom support for lightbox
   elLightbox.addEventListener('touchstart', (e) => {
     if (e.touches.length === 2) {
-      // Stop Safari from starting its own page-zoom gesture
-      e.preventDefault();
       lbGesture = 'pinch';
       const t1 = e.touches[0];
       const t2 = e.touches[1];
@@ -414,7 +433,7 @@ window.addEventListener('DOMContentLoaded', () => {
       lbLastTapX = t.clientX;
       lbLastTapY = t.clientY;
     }
-  }, { passive: false });
+  }, { passive: true });
 
   elLightbox.addEventListener('touchmove', (e) => {
     if (lbGesture === 'pinch' && e.touches.length === 2) {
@@ -473,6 +492,11 @@ window.addEventListener('DOMContentLoaded', () => {
       }
     }
   }, { passive: true });
+
+  // Safety net: if Safari cancels the touch sequence, reset gesture state
+  elLightbox.addEventListener('touchcancel', () => {
+    lbGesture = null;
+  });
 
   // Scroll to top
   elScrollTopBtn.addEventListener('click', () => {
