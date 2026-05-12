@@ -28,6 +28,5 @@ window.GUITAR_IMAGES = [
   "images/guitars/scimitar5.webp",
   "images/guitars/scimitar6.webp",
   "images/guitars/scimitar7.webp",
-  "images/guitars/scimitar8.webp",
   "images/guitars/scimitar9.webp",
 ];
