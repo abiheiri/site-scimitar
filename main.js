@@ -101,17 +101,57 @@ const headerObserver = new IntersectionObserver((entries) => {
 }, { threshold: 0.3 });
 
 // ── Gallery ──
+let galleryColumns = [];
+
+function getColumnCount() {
+  if (window.innerWidth <= 400) return 1;
+  if (window.innerWidth <= 1024) return 2;
+  return 3;
+}
+
+function createGalleryColumns() {
+  const count = getColumnCount();
+  elGallery.innerHTML = '';
+  galleryColumns = [];
+  for (let i = 0; i < count; i++) {
+    const col = document.createElement('div');
+    col.className = 'gallery-column';
+    elGallery.appendChild(col);
+    galleryColumns.push(col);
+  }
+}
+
+function getShortestColumn() {
+  let shortest = galleryColumns[0];
+  let minHeight = shortest.scrollHeight;
+  for (let i = 1; i < galleryColumns.length; i++) {
+    const h = galleryColumns[i].scrollHeight;
+    if (h < minHeight) {
+      minHeight = h;
+      shortest = galleryColumns[i];
+    }
+  }
+  return shortest;
+}
+
 function loadNextBatch() {
   const toLoad = images.slice(loadedCount, loadedCount + BATCH);
-  toLoad.forEach((src, i) => {
+  toLoad.forEach((itemData, i) => {
+    const src = itemData.src;
+    const w = itemData.w;
+    const h = itemData.h;
+
     const item = document.createElement('div');
     item.className = 'gallery-item';
     item.setAttribute('role', 'button');
     item.setAttribute('tabindex', '0');
     item.setAttribute('aria-label', 'View image ' + (loadedCount + i + 1));
     item.dataset.index = String(loadedCount + i);
+    if (w && h) {
+      item.style.aspectRatio = w + ' / ' + h;
+    }
 
-    function activate() { openLightbox(src); }
+    function activate() { openLightbox(itemData); }
     item.addEventListener('click', activate);
     item.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -140,17 +180,21 @@ function loadNextBatch() {
       const img = new Image();
       img.alt = 'Scimitar Guitar';
       img.loading = 'lazy';
+      if (w && h) {
+        img.width = w;
+        img.height = h;
+      }
       img.addEventListener('load', () => {
         img.classList.add('loaded');
         item.dataset.mediaLoaded = '1';
         tryReveal(item);
       });
       item.appendChild(img);
-      // Set src after appending so layout is stable
       requestAnimationFrame(() => { img.src = src; });
     }
 
-    elGallery.appendChild(item);
+    const col = getShortestColumn();
+    col.appendChild(item);
     revealObserver.observe(item);
   });
   loadedCount += toLoad.length;
@@ -176,11 +220,11 @@ function unlockViewportZoom() {
 }
 
 // ── Lightbox ──
-function openLightbox(src) {
+function openLightbox(item) {
   lastScrollY = window.scrollY;
   lastFocusedElement = document.activeElement;
-  currentIndex = images.indexOf(src);
-  showMedia(src);
+  currentIndex = images.findIndex((img) => img.src === item.src);
+  showMedia(item.src);
   lockViewportZoom();
   elLightbox.classList.add('active');
   document.body.style.overflow = 'hidden';
@@ -235,7 +279,7 @@ function navigateLightbox(dir) {
   if (next < 0) next = images.length - 1;
   if (next >= images.length) next = 0;
   currentIndex = next;
-  showMedia(images[next]);
+  showMedia(images[next].src);
   updateCounter();
 }
 
@@ -332,6 +376,7 @@ window.addEventListener('DOMContentLoaded', () => {
   script.src = 'images/guitars/manifest.js';
   script.onload = () => {
     images = shuffle(window.GUITAR_IMAGES.slice());
+    createGalleryColumns();
     loadNextBatch();
 
     // Observers

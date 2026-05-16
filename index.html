@@ -321,13 +321,19 @@
     .gallery {
       max-width: 1400px;
       margin: 0 auto;
-      columns: 3;
-      column-gap: 20px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .gallery-column {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .gallery-item {
-      break-inside: avoid;
-      margin-bottom: 20px;
       position: relative;
       overflow: hidden;
       border-radius: 4px;
@@ -336,7 +342,6 @@
       transform: translateY(50px);
       transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
                   transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
-      min-height: 200px;
       background: var(--surface);
     }
 
@@ -360,8 +365,16 @@
     .gallery-item img,
     .gallery-item video {
       width: 100%;
+      height: auto;
       display: block;
       transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Fallback for browsers without aspect-ratio support (older iOS) */
+    @supports not (aspect-ratio: 1 / 1) {
+      .gallery-item {
+        min-height: 200px;
+      }
     }
 
     .gallery-item:hover img,
@@ -666,8 +679,8 @@
 
     /* ── Responsive ── */
     @media (max-width: 1024px) {
-      .gallery { columns: 2; column-gap: 16px; }
-      .gallery-item { margin-bottom: 16px; }
+      .gallery { gap: 16px; }
+      .gallery-column { gap: 16px; }
     }
 
     @media (max-width: 640px) {
@@ -677,8 +690,9 @@
       .nav-link { font-size: 0.7rem; letter-spacing: 2px; }
       .hero-logo { height: 100px; }
       .gallery-section { padding: 48px 12px 0; }
-      .gallery { columns: 2; column-gap: 10px; }
-      .gallery-item { margin-bottom: 10px; border-radius: 3px; }
+      .gallery { gap: 10px; }
+      .gallery-column { gap: 10px; }
+      .gallery-item { border-radius: 3px; }
       .gallery-header { margin-bottom: 40px; }
       .about-inner { padding: 64px 28px 32px; }
       .lightbox-nav { display: none; }
@@ -694,7 +708,8 @@
     }
 
     @media (max-width: 400px) {
-      .gallery { columns: 1; }
+      .gallery { gap: 10px; }
+      .gallery-column { gap: 10px; }
     }
 
     /* ── Focus Visible ── */
