@@ -1,9 +1,6 @@
 window.GUITAR_IMAGES = [
-Resizing A2670B1B-CCBD-4663-856E-329EFD82F677.JPG (2048 px -> 1200px max)
   { src: "images/guitars/A2670B1B-CCBD-4663-856E-329EFD82F677.webp", w: 1200, h: 900 },
-Resizing A2A8B679-7224-4FD7-B25C-AC51258E4C34.JPG (2048 px -> 1200px max)
   { src: "images/guitars/A2A8B679-7224-4FD7-B25C-AC51258E4C34.webp", w: 900, h: 1200 },
-Resizing EF001C5B-9AED-4CC2-AB9B-BE07877369E1.JPG (2048 px -> 1200px max)
   { src: "images/guitars/EF001C5B-9AED-4CC2-AB9B-BE07877369E1.webp", w: 900, h: 1200 },
   { src: "images/guitars/scimitar1.webp", w: 1200, h: 1133 },
   { src: "images/guitars/scimitar1.mp4", w: 480, h: 854 },
@@ -25,7 +22,6 @@ Resizing EF001C5B-9AED-4CC2-AB9B-BE07877369E1.JPG (2048 px -> 1200px max)
   { src: "images/guitars/scimitar23.webp", w: 1200, h: 675 },
   { src: "images/guitars/scimitar24.webp", w: 675, h: 1200 },
   { src: "images/guitars/scimitar25.webp", w: 675, h: 1200 },
-Resizing scimitar26.jpg (1440 px -> 1200px max)
   { src: "images/guitars/scimitar26.webp", w: 1200, h: 1067 },
   { src: "images/guitars/scimitar3.webp", w: 1200, h: 1200 },
   { src: "images/guitars/scimitar4.webp", w: 675, h: 1200 },
