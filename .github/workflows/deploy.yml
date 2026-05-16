@@ -39,7 +39,7 @@ jobs:
                 # Resize if larger than 1200px on any edge
                 max_dim=$(identify -format "%[fx:max(w,h)]" "$f" 2>/dev/null || echo 0)
                 if [ "$max_dim" -gt 1200 ]; then
-                  echo "Resizing $f ($max_dim px -> 1200px max)"
+                  echo "Resizing $f ($max_dim px -> 1200px max)" >&2
                   mogrify -resize 1200x1200\> "$f"
                   w=$(identify -format "%w" "$f" 2>/dev/null || echo "$w")
                   h=$(identify -format "%h" "$f" 2>/dev/null || echo "$h")
