@@ -13,36 +13,44 @@ jobs:
       #
       # Resize oversized images, convert everything to WebP, then remove originals.
       # Master keeps .jpg — production gets the optimized .webp files.
+      # Dimensions are captured before conversion so the manifest can include them.
       #
-      - name: Optimize and convert images to WebP
+      - name: Optimize images and generate manifest
         run: |
           sudo apt-get install -y imagemagick webp
           cd images/guitars
-          find . -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) \
-            | sed 's|^\./||' | while read f; do
-              [ -f "$f" ] || continue
-              # Resize if larger than 1200px on any edge
-              max_dim=$(identify -format "%[fx:max(w,h)]" "$f" 2>/dev/null || echo 0)
-              if [ "$max_dim" -gt 1200 ]; then
-                echo "Resizing $f ($max_dim px -> 1200px max)"
-                mogrify -resize 1200x1200\> "$f"
-              fi
-              # Convert to WebP and delete the original
-              cwebp -q 82 "$f" -o "${f%.*}.webp"
-              rm "$f"
-            done
-
-      #
-      # This creates a manifest.js file in the images/guitars directory that lists all the image and video files.
-      # The production branch uses this manifest to know which media files to load.
-      #
-      - name: Generate image manifest
-        run: |
-          cd images/guitars
           echo "window.GUITAR_IMAGES = [" > manifest.js
-          find . -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.mp4' -o -iname '*.webp' \) \
+          find . -maxdepth 1 -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.mp4' \) \
             | sed 's|^\./||' | sort | while read f; do
-              echo "  \"images/guitars/$f\","
+              [ -f "$f" ] || continue
+              if [[ "$f" =~ \.(mp4|mov)$ ]] || [[ "$f" =~ \.(MP4|MOV)$ ]]; then
+                if [ "$f" = "scimitar1.mp4" ]; then
+                  echo "  { src: \"images/guitars/$f\", w: 480, h: 854 },"
+                elif [ "$f" = "scimitar2.mp4" ]; then
+                  echo "  { src: \"images/guitars/$f\", w: 360, h: 450 },"
+                else
+                  echo "  { src: \"images/guitars/$f\", w: 480, h: 854 },"
+                fi
+              else
+                # Capture dimensions before converting
+                w=$(identify -format "%w" "$f" 2>/dev/null || echo 1200)
+                h=$(identify -format "%h" "$f" 2>/dev/null || echo 1200)
+
+                # Resize if larger than 1200px on any edge
+                max_dim=$(identify -format "%[fx:max(w,h)]" "$f" 2>/dev/null || echo 0)
+                if [ "$max_dim" -gt 1200 ]; then
+                  echo "Resizing $f ($max_dim px -> 1200px max)"
+                  mogrify -resize 1200x1200\> "$f"
+                  w=$(identify -format "%w" "$f" 2>/dev/null || echo "$w")
+                  h=$(identify -format "%h" "$f" 2>/dev/null || echo "$h")
+                fi
+
+                # Convert to WebP and delete the original
+                cwebp -q 82 "$f" -o "${f%.*}.webp"
+                rm "$f"
+
+                echo "  { src: \"images/guitars/${f%.*}.webp\", w: $w, h: $h },"
+              fi
             done >> manifest.js
           echo "];" >> manifest.js
 
